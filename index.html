@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GSRTC Mobile Transit</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gsrtcRed: '#d62027',
+            gsrtcDarkRed: '#b5141a',
+            gsrtcBorder: '#cfd8dc',
+            gsrtcText: '#37474f',
+            gsrtcSubtext: '#607d8b',
+            gsrtcRunning: '#2e7d32',
+            gsrtcScheduled: '#1565c0'
+          },
+          boxShadow: {
+            appCard: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
+            phone: '0 25px 50px -12px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Font: Inter & Roboto -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #2b3a4a;
+      background-image: radial-gradient(circle at 50% 20%, #3e5066 0%, #1e293b 100%);
+    }
+    /* Mobile app container emulation */
+    .mobile-frame {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 880px;
+      background: #ffffff;
+      border-radius: 0px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    @media (min-width: 640px) {
+      .mobile-frame {
+        height: 94vh;
+        max-height: 840px;
+        border-radius: 36px;
+        border: 7px solid #111827;
+      }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    /* Pulse wave for moving bus */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.6); opacity: 0.9; }
+      100% { transform: scale(2.0); opacity: 0; }
+    }
+    .pulse-ring-indicator {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(214, 32, 39, 0.45);
+      animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      pointer-events: none;
+      top: -6px;
+      left: -6px;
+    }
+    .leaflet-container {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen sm:p-4">
+
+  <!-- ==================== MAIN MOBILE APP CONTAINER ==================== -->
+  <div class="mobile-frame">
+    
+    <!-- Top Mobile Status Bar (Simulated) -->
+    <div class="bg-white px-5 pt-2 pb-1 flex items-center justify-between text-xs text-slate-800 font-semibold z-30 select-none border-b border-slate-100">
+      <span id="live-clock">1:30 PM</span>
+      <div class="flex items-center gap-1.5 text-slate-700">
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+        <div class="flex items-center gap-0.5 text-[11px] font-mono">
+          <span>92%</span>
+          <i data-lucide="battery-medium" class="w-4 h-4"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Stack Container -->
+    <div class="relative flex-1 overflow-hidden bg-slate-50 flex flex-col">
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 1: DASHBOARD (Home Screen - Screenshot 1)          -->
+      <!-- ======================================================== -->
+      <div id="screen-dashboard" class="screen-view absolute inset-0 flex flex-col bg-white z-10">
+        <!-- Dashboard Header -->
+        <div class="h-14 border-b border-slate-200 px-4 flex items-center justify-between bg-white shadow-sm flex-shrink-0">
+          <button class="p-1.5 text-slate-700 hover:bg-slate-100 rounded-full active:scale-95 transition-all">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <h1 class="text-lg font-bold text-slate-800">Dashboard</h1>
+          <div class="w-6"></div> <!-- spacer -->
+        </div>
+
+        <!-- Dashboard Content Body with illustration -->
+        <div class="flex-1 flex flex-col justify-between overflow-y-auto relative">
+          
+          <div class="p-5 flex flex-col items-center">
+            
+            <!-- Circular Official GSRTC Style Emblem -->
+            <div class="w-24 h-24 rounded-full border-2 border-slate-700 p-1 flex items-center justify-center my-3 bg-white shadow-sm">
+              <div class="w-full h-full rounded-full border border-dashed border-slate-600 flex flex-col items-center justify-center text-center p-1 bg-slate-50">
+                <i data-lucide="shield" class="w-5 h-5 text-slate-700 mb-0.5"></i>
+                <span class="text-[9px] font-bold text-slate-800 leading-tight">ગુજરાત એસ.ટી.</span>
+                <span class="text-[7px] text-slate-600 uppercase font-bold tracking-tighter">GSRTC</span>
+              </div>
+            </div>
+
+            <!-- 2x2 Grid Menu with thin Pink/Red dividing lines -->
+            <div class="w-full max-w-sm mt-4 bg-white rounded-xl relative shadow-sm border border-slate-100">
+              
+              <!-- Divider Lines -->
+              <div class="absolute left-1/2 top-4 bottom-4 w-[1px] bg-red-200 -translate-x-1/2 pointer-events-none"></div>
+              <div class="absolute top-1/2 left-4 right-4 h-[1px] bg-red-200 -translate-y-1/2 pointer-events-none"></div>
+
+              <div class="grid grid-cols-2">
+                
+                <!-- Nearby Station -->
+                <button onclick="navToRoutes('Ahmedabad', 'Navsari')" class="p-6 flex flex-col items-center justify-center hover:bg-slate-50 active:bg-red-50/50 transition-colors">
+                  <!-- Custom Station Path Icon -->
+                  <svg class="w-9 h-9 text-red-500 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="4" cy="12" r="2.5" fill="#ef4444" stroke="none"/>
+                    <circle cx="12" cy="6" r="2.5" fill="#ef4444" stroke="none"/>
+                    <circle cx="20" cy="18" r="2.5" fill="#ef4444" stroke="none"/>
+                    <path d="M4 12 Q8 4 12 6 T20 18" stroke="#ef4444" stroke-width="2"/>
+                  </svg>
+                  <span class="text-xs font-medium text-slate-700">Nearby station</span>
+                </button>
+
+                <!-- Search Bus -->
+                <button onclick="navToRoutes('Ahmedabad', 'Navsari')" class="p-6 flex flex-col items-center justify-center hover:bg-slate-50 active:bg-red-50/50 transition-colors">
+                  <!-- Infinity loop route icon -->
+                  <svg class="w-9 h-9 text-slate-800 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/>
+                    <circle cx="18" cy="8" r="1.5" fill="#ef4444" stroke="none"/>
+                  </svg>
+                  <span class="text-xs font-medium text-slate-700">Search Bus</span>
+                </button>
+
+                <!-- Time Table -->
+                <button onclick="navToRoutes('Surat', 'Ahmedabad')" class="p-6 flex flex-col items-center justify-center hover:bg-slate-50 active:bg-red-50/50 transition-colors">
+                  <!-- Calendar Icon with Red Top -->
+                  <div class="w-9 h-9 border-2 border-red-500 rounded-md p-1 mb-2 relative bg-white flex flex-col justify-between">
+                    <div class="h-2 bg-red-500 rounded-sm w-full"></div>
+                    <div class="grid grid-cols-3 gap-0.5 px-0.5">
+                      <div class="w-1.5 h-1.5 bg-slate-600 rounded-xs"></div>
+                      <div class="w-1.5 h-1.5 bg-slate-600 rounded-xs"></div>
+                      <div class="w-1.5 h-1.5 bg-slate-600 rounded-xs"></div>
+                    </div>
+                  </div>
+                  <span class="text-xs font-medium text-slate-700">Time Table</span>
+                </button>
+
+                <!-- Track My Bus -->
+                <button onclick="openBusTrackDirect('GJ-18-Z-7899', 'Vijapur to Surat')" class="p-6 flex flex-col items-center justify-center hover:bg-slate-50 active:bg-red-50/50 transition-colors">
+                  <!-- Route with bus & pins icon -->
+                  <svg class="w-9 h-9 text-red-500 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1 .4-1 1v7c0 .6.4 1 1 1h1"/>
+                    <circle cx="7" cy="17" r="2"/>
+                    <path d="M9 17h6"/>
+                    <circle cx="17" cy="17" r="2"/>
+                  </svg>
+                  <span class="text-xs font-medium text-slate-700">Track My Bus</span>
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Subtle bottom bus stop illustration -->
+          <div class="w-full px-6 opacity-30 mt-auto pointer-events-none pb-4">
+            <svg class="w-full h-28" viewBox="0 0 320 120" fill="none">
+              <rect x="20" y="50" width="80" height="50" rx="4" stroke="#475569" stroke-width="2"/>
+              <line x1="10" y1="100" x2="310" y2="100" stroke="#475569" stroke-width="2"/>
+              <circle cx="35" cy="100" r="8" fill="#475569"/>
+              <circle cx="85" cy="100" r="8" fill="#475569"/>
+              <rect x="25" y="60" width="20" height="15" fill="#475569"/>
+              <rect x="55" y="60" width="20" height="15" fill="#475569"/>
+              <path d="M180 30 L260 30 L270 45 L170 45 Z" fill="#94a3b8"/>
+              <line x1="215" y1="45" x2="215" y2="100" stroke="#475569" stroke-width="3"/>
+              <circle cx="150" cy="70" r="5" fill="#64748b"/>
+              <path d="M145 78 L155 78 L153 95 L147 95 Z" fill="#64748b"/>
+            </svg>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 2: SEARCH BUS / ROUTES (Screenshot 2)              -->
+      <!-- ======================================================== -->
+      <div id="screen-routes" class="screen-view absolute inset-0 flex flex-col bg-white hidden z-10">
+        <!-- Routes Header -->
+        <div class="h-14 border-b border-slate-200 px-4 flex items-center justify-between bg-white shadow-sm flex-shrink-0">
+          <button onclick="navToDashboard()" class="p-1.5 text-slate-700 hover:bg-slate-100 rounded-full active:scale-95 transition-all">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <h1 class="text-base font-bold text-slate-800">Routes</h1>
+          <div class="w-6"></div>
+        </div>
+
+        <div class="p-4 flex-1 overflow-y-auto">
+          
+          <form onsubmit="handleRouteSearch(event)" class="space-y-3">
+            
+            <!-- From / To Station Card with Swap Button -->
+            <div class="relative bg-white border border-slate-300 rounded-md p-1 shadow-sm">
+              
+              <!-- From Input -->
+              <div class="flex items-center px-3 py-2 border-b border-slate-200">
+                <input type="text" id="route-from-input" value="Ahmedabad" placeholder="From Station" class="flex-1 text-sm font-medium text-slate-800 outline-none bg-transparent">
+                <button type="button" onclick="clearInput('route-from-input')" class="text-slate-400 hover:text-slate-600 p-1">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+
+              <!-- Swap Button (Centered between inputs) -->
+              <div class="absolute right-7 top-1/2 -translate-y-1/2 z-10">
+                <button type="button" onclick="swapFromTo()" class="w-8 h-8 rounded-full bg-white border border-slate-300 shadow-md flex items-center justify-center text-slate-600 hover:bg-slate-50 active:scale-90 transition-all">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- To Input -->
+              <div class="flex items-center px-3 py-2">
+                <input type="text" id="route-to-input" value="Navsari" placeholder="To Station" class="flex-1 text-sm font-medium text-slate-800 outline-none bg-transparent">
+                <button type="button" onclick="clearInput('route-to-input')" class="text-slate-400 hover:text-slate-600 p-1">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Type and Time Filter Row -->
+            <div class="grid grid-cols-2 gap-2">
+              <!-- Type Dropdown -->
+              <div class="relative bg-white border border-slate-300 rounded-md px-3 py-2">
+                <label class="block text-[10px] text-slate-400 uppercase font-semibold">Service Type</label>
+                <select id="route-type-select" class="w-full text-xs font-medium text-slate-800 bg-transparent outline-none appearance-none pr-4">
+                  <option value="All">All</option>
+                  <option value="Express">Express</option>
+                  <option value="Volvo 2x2">Volvo 2x2</option>
+                  <option value="Luxury">Luxury</option>
+                </select>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 absolute right-2.5 bottom-2.5 pointer-events-none"></i>
+              </div>
+
+              <!-- Departure Time Selector -->
+              <div class="relative bg-white border border-slate-300 rounded-md px-3 py-2">
+                <label class="block text-[10px] text-slate-400 uppercase font-semibold">Departure Time</label>
+                <select id="route-time-select" class="w-full text-xs font-medium text-slate-800 bg-transparent outline-none appearance-none pr-4">
+                  <option value="07:30 PM">07:30 PM</option>
+                  <option value="Anytime">Anytime</option>
+                  <option value="Morning">Morning (06:00 - 12:00)</option>
+                  <option value="Afternoon">Afternoon (12:00 - 18:00)</option>
+                  <option value="Night">Night (18:00 - 24:00)</option>
+                </select>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 absolute right-2.5 bottom-2.5 pointer-events-none"></i>
+              </div>
+            </div>
+
+            <!-- Date of Journey Input -->
+            <div class="bg-white border border-slate-300 rounded-md px-3 py-2.5 flex items-center justify-between">
+              <span class="text-xs text-slate-500 font-medium">Date of Journey</span>
+              <input type="text" id="route-date" value="18/01/2024" class="text-xs font-semibold text-slate-800 text-right bg-transparent outline-none cursor-pointer">
+            </div>
+
+            <!-- Primary Red Button: Search Bus -->
+            <button type="submit" class="w-full bg-[#d62027] hover:bg-[#b5141a] active:scale-[0.99] text-white font-semibold py-3 rounded-md text-sm shadow-md transition-all mt-4">
+              Search Bus
+            </button>
+
+          </form>
+
+          <!-- Quick Station Tags for faster testing -->
+          <div class="mt-6">
+            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Popular Routes:</span>
+            <div class="flex flex-wrap gap-1.5 text-xs">
+              <button onclick="setFastRoute('Ahmedabad', 'Navsari')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200">Ahmedabad ➔ Navsari</button>
+              <button onclick="setFastRoute('Vijapur', 'Surat')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200">Vijapur ➔ Surat</button>
+              <button onclick="setFastRoute('Sachivalay', 'Bavla')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200">Sachivalay ➔ Bavla</button>
+              <button onclick="setFastRoute('Ahmedabad', 'Rajkot')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200">Ahmedabad ➔ Rajkot</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 3: BUS LIST - ROUTE COVERING YOUR LOCATION         -->
+      <!-- (Screenshot 3)                                           -->
+      <!-- ======================================================== -->
+      <div id="screen-buslist" class="screen-view absolute inset-0 flex flex-col bg-slate-100 hidden z-10">
+        
+        <!-- Header -->
+        <div class="h-14 border-b border-slate-200 px-4 flex items-center justify-between bg-white shadow-sm flex-shrink-0">
+          <button onclick="navToRoutes()" class="p-1.5 text-slate-700 hover:bg-slate-100 rounded-full active:scale-95 transition-all">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <h1 class="text-sm sm:text-base font-bold text-slate-800 truncate px-2">Route Covering Your Location</h1>
+          <div class="w-6"></div>
+        </div>
+
+        <!-- Bus Cards Container List -->
+        <div id="bus-cards-list" class="p-3 space-y-2.5 overflow-y-auto flex-1">
+          <!-- Dynamically populated to match screenshot 3 -->
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 4 & 5: ROUTE DETAILS (Stations ETA & Map View)     -->
+      <!-- (Screenshots 4 & 5)                                      -->
+      <!-- ======================================================== -->
+      <div id="screen-routedetails" class="screen-view absolute inset-0 flex flex-col bg-white hidden z-10">
+        
+        <!-- Header -->
+        <div class="h-14 border-b border-slate-200 px-4 flex items-center justify-between bg-white shadow-sm flex-shrink-0 z-20">
+          <button onclick="navToBusList()" class="p-1.5 text-slate-700 hover:bg-slate-100 rounded-full active:scale-95 transition-all">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+          <h1 class="text-base font-bold text-slate-800">Route Details</h1>
+          <button onclick="shareRouteDetails()" class="p-1.5 text-slate-700 hover:bg-slate-100 rounded-full">
+            <i data-lucide="share-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Sticky Route Summary Card (Screenshots 4 & 5) -->
+        <div class="p-3 bg-white border-b border-slate-200 z-20 shadow-xs">
+          <div class="border border-slate-300 rounded-lg p-3 bg-white">
+            <div class="flex items-start justify-between">
+              <div>
+                <h2 id="detail-route-title" class="font-bold text-slate-900 text-sm">Sachivalay to Bavla</h2>
+                <div class="text-xs text-slate-600 mt-0.5">
+                  Bus No: <span id="detail-bus-no" class="font-semibold text-slate-800">GJ-18-Z-6066</span>
+                </div>
+                <div class="text-xs text-slate-600">
+                  Type: <span id="detail-bus-type" class="text-slate-800">Express</span>
+                </div>
+              </div>
+              <span id="detail-badge-status" class="text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">
+                Running
+              </span>
+            </div>
+
+            <!-- Two stats boxes: Distance & Time -->
+            <div class="grid grid-cols-2 gap-3 mt-3">
+              <div class="border border-slate-300 rounded-md p-2 text-center bg-slate-50/50">
+                <span class="text-[11px] text-slate-500 font-semibold block">Km</span>
+                <span id="detail-km" class="text-sm font-bold text-red-600 block">56.88</span>
+                <span class="text-[10px] text-slate-500">Distance</span>
+              </div>
+              <div class="border border-slate-300 rounded-md p-2 text-center bg-slate-50/50">
+                <span class="text-[11px] text-slate-500 font-semibold block">Hr</span>
+                <span id="detail-hr" class="text-sm font-bold text-red-600 block">01:25:00</span>
+                <span class="text-[10px] text-slate-500">Time</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Route Content Area (Toggles between Station Timeline & Leaflet Map) -->
+        <div class="flex-1 relative overflow-hidden">
+          
+          <!-- View 4A: Station ETA Timeline (Screenshot 4) -->
+          <div id="subview-station" class="absolute inset-0 overflow-y-auto p-4 bg-white">
+            <div id="stations-timeline-container" class="space-y-4 relative">
+              <!-- Dynamically populated timeline -->
+            </div>
+          </div>
+
+          <!-- View 4B: Live Route Map (Screenshot 5) -->
+          <div id="subview-map" class="absolute inset-0 hidden">
+            <div id="leaflet-route-map" class="w-full h-full"></div>
+            
+            <!-- Floating Recenter Bus button -->
+            <button onclick="recenterLeafletMap()" class="absolute bottom-4 right-4 z-[999] bg-white border border-slate-300 p-2.5 rounded-full shadow-lg text-red-600 active:scale-90 transition-all">
+              <i data-lucide="crosshair" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Bottom Tabs: Station & Map Toggle (Screenshots 4 & 5) -->
+        <div class="h-14 border-t border-slate-200 bg-white grid grid-cols-2 z-20">
+          <button id="tab-btn-station" onclick="switchRouteSubView('station')" class="flex flex-col items-center justify-center text-red-600 font-semibold text-xs active:bg-slate-50">
+            <i data-lucide="git-commit" class="w-4 h-4 mb-0.5"></i>
+            <span>Station</span>
+          </button>
+          <button id="tab-btn-map" onclick="switchRouteSubView('map')" class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 text-xs active:bg-slate-50">
+            <i data-lucide="map-pin" class="w-4 h-4 mb-0.5"></i>
+            <span>Map</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* -------------------------------------------------------------
+       DATABASE: GSRTC ROUTES, BUSES, AND WAYPOINTS
+    ------------------------------------------------------------- */
+    const BUS_DATABASE = [
+      {
+        id: "b1",
+        title: "Somnath to Vijapur",
+        busNo: "GJ-18-Z-6740",
+        type: "Express",
+        arrival: "7:25 PM",
+        status: "Scheduled",
+        distance: "410.20",
+        time: "08:40:00",
+        from: "Somnath",
+        to: "Vijapur",
+        stops: [
+          { name: "Somnath Mandir Depot", time: "Arrived at 11:00:15 AM", passed: true },
+          { name: "Veraval Bypass", time: "Arrived at 11:22:40 AM", passed: true },
+          { name: "Junagadh ST Stand", time: "Arrived at 01:15:20 PM", passed: true },
+          { name: "Rajkot Gondal Chowkadi", time: "Arrived at 03:30:10 PM", passed: true },
+          { name: "Chotila Temple Stop", time: "Expected 04:45 PM", passed: false },
+          { name: "Ahmedabad Geeta Mandir", time: "Expected 07:25 PM", passed: false },
+          { name: "Gandhinagar CH Road", time: "Expected 08:10 PM", passed: false },
+          { name: "Vijapur Bus Stand", time: "Expected 08:40 PM", passed: false }
+        ],
+        coordinates: [
+          [20.9010, 70.4010],
+          [21.5222, 70.4579],
+          [22.3039, 70.8022],
+          [22.4200, 71.1900],
+          [23.0135, 72.5913],
+          [23.2156, 72.6369],
+          [23.5600, 72.7500]
+        ]
+      },
+      {
+        id: "b2",
+        title: "Sachivalay to Bavla",
+        busNo: "GJ-18-Z-6066",
+        type: "Express",
+        arrival: "7:26 PM",
+        status: "Running",
+        distance: "56.88",
+        time: "01:25:00",
+        from: "Sachivalay",
+        to: "Bavla",
+        stops: [
+          { name: "Sachivalay - Gandhinagar", time: "Arrived at 6:12:12 PM", passed: true },
+          { name: "CH Road Near Vidhansabha Ahmedabad side", time: "Arrived at 6:12:12 PM", passed: true },
+          { name: "Gandhinagar", time: "Arrived at 6:17:52 PM", passed: true },
+          { name: "Gh-2 Circle (Sector 3 Side)", time: "Arrived at 6:33:12 PM", passed: true },
+          { name: "Sector-3 Near GH 2", time: "Arrived at 6:33:32 PM", passed: true },
+          { name: "Mota GH-0 Towards Infocity Side", time: "Arrived at 6:35:32 PM", passed: true },
+          { name: "Adalaj Chowkadi (Ahmedabad)", time: "Arrived at 6:49:32 PM", passed: true },
+          { name: "Iscon (Ahmedabad)", time: "Arrived at 7:08:14 PM", passed: true },
+          { name: "Sanand Cross Road", time: "Expected 7:20 PM", passed: false },
+          { name: "Bavla Bus Stand", time: "Expected 7:26 PM", passed: false }
+        ],
+        coordinates: [
+          [23.2230, 72.6500],
+          [23.2156, 72.6369],
+          [23.1900, 72.6100],
+          [23.1670, 72.5850],
+          [23.0300, 72.5080],
+          [22.9800, 72.4400],
+          [22.8340, 72.3610]
+        ]
+      },
+      {
+        id: "b3",
+        title: "Ahmedabad to Rajkot - Volvo",
+        busNo: "GJ-18-AZ-9146",
+        type: "Volvo 2x2",
+        arrival: "7:32 PM",
+        status: "Running",
+        distance: "216.50",
+        time: "03:45:00",
+        from: "Ahmedabad",
+        to: "Rajkot",
+        stops: [
+          { name: "Ahmedabad Nehrunagar Pick-up", time: "Arrived at 3:45:10 PM", passed: true },
+          { name: "Bavla Highway Toll", time: "Arrived at 4:35:22 PM", passed: true },
+          { name: "Bagodara Junction", time: "Arrived at 5:15:30 PM", passed: true },
+          { name: "Limbdi Highway Food Mall", time: "Arrived at 6:10:00 PM", passed: true },
+          { name: "Sayla Cross Road", time: "Arrived at 6:45:10 PM", passed: true },
+          { name: "Chotila Temple Entry", time: "Arrived at 7:10:45 PM", passed: true },
+          { name: "Rajkot ST Central Depot", time: "Expected 7:32 PM", passed: false }
+        ],
+        coordinates: [
+          [23.0135, 72.5913],
+          [22.8340, 72.3610],
+          [22.6100, 72.1500],
+          [22.5600, 71.8000],
+          [22.4200, 71.1900],
+          [22.3039, 70.8022]
+        ]
+      },
+      {
+        id: "b4",
+        title: "Radhanpur to Ahmedabad",
+        busNo: "GJ-18-Z-8030",
+        type: "Express",
+        arrival: "7:35 PM",
+        status: "Scheduled",
+        distance: "172.10",
+        time: "03:30:00",
+        from: "Radhanpur",
+        to: "Ahmedabad",
+        stops: [
+          { name: "Radhanpur Depot", time: "Arrived at 04:00 PM", passed: true },
+          { name: "Sami Cross Road", time: "Arrived at 04:45 PM", passed: true },
+          { name: "Mandal Town", time: "Arrived at 05:30 PM", passed: true },
+          { name: "Viramgam ST Stand", time: "Arrived at 06:15 PM", passed: true },
+          { name: "Sanand GIDC", time: "Expected 07:05 PM", passed: false },
+          { name: "Ahmedabad Geeta Mandir", time: "Expected 07:35 PM", passed: false }
+        ],
+        coordinates: [
+          [23.8333, 71.6000],
+          [23.5800, 71.8000],
+          [23.1200, 72.0600],
+          [22.9800, 72.4400],
+          [23.0135, 72.5913]
+        ]
+      },
+      {
+        id: "b5",
+        title: "Zalod to Jamnagar",
+        busNo: "GJ-18-Z-7270",
+        type: "Express",
+        arrival: "7:42 PM",
+        status: "Running",
+        distance: "385.00",
+        time: "07:50:00",
+        from: "Zalod",
+        to: "Jamnagar",
+        stops: [
+          { name: "Zalod Bus Stand", time: "Arrived at 12:00 PM", passed: true },
+          { name: "Godhra ST Stand", time: "Arrived at 02:15 PM", passed: true },
+          { name: "Ahmedabad Ring Road", time: "Arrived at 04:45 PM", passed: true },
+          { name: "Surendranagar Cut", time: "Arrived at 06:15 PM", passed: true },
+          { name: "Rajkot Madhapar Chowk", time: "Expected 07:15 PM", passed: false },
+          { name: "Jamnagar Victoria Bridge", time: "Expected 07:42 PM", passed: false }
+        ],
+        coordinates: [
+          [22.8800, 74.1500],
+          [22.7756, 73.6149],
+          [23.0135, 72.5913],
+          [22.3039, 70.8022],
+          [22.4707, 70.0577]
+        ]
+      },
+      {
+        id: "b6",
+        title: "Palanpur to Ahmedabad Vishala APMC",
+        busNo: "GJ-18-Z-7403",
+        type: "Express",
+        arrival: "7:43 PM",
+        status: "Running",
+        distance: "148.00",
+        time: "03:15:00",
+        from: "Palanpur",
+        to: "Ahmedabad",
+        stops: [
+          { name: "Palanpur ST Depot", time: "Arrived at 04:30 PM", passed: true },
+          { name: "Siddhpur Toll", time: "Arrived at 05:10 PM", passed: true },
+          { name: "Mehsana Highway Bypass", time: "Arrived at 05:50 PM", passed: true },
+          { name: "Kalol Highway", time: "Arrived at 06:40 PM", passed: true },
+          { name: "Chandkheda Ahmedabad", time: "Arrived at 07:15 PM", passed: true },
+          { name: "Vishala APMC Vasna", time: "Expected 07:43 PM", passed: false }
+        ],
+        coordinates: [
+          [24.1724, 72.4346],
+          [23.9167, 72.3833],
+          [23.6000, 72.4000],
+          [23.2300, 72.5000],
+          [23.0135, 72.5913]
+        ]
+      },
+      {
+        id: "b7",
+        title: "Vijapur to Surat",
+        busNo: "GJ-18-Z-7899",
+        type: "Express",
+        arrival: "7:55 PM",
+        status: "Running",
+        distance: "343.82",
+        time: "06:45:00",
+        from: "Vijapur",
+        to: "Surat",
+        stops: [
+          { name: "Vijapur ST Depot", time: "Arrived at 01:10 PM", passed: true },
+          { name: "Gandhinagar Pathikashram", time: "Arrived at 02:15 PM", passed: true },
+          { name: "Ahmedabad Geeta Mandir", time: "Arrived at 03:05 PM", passed: true },
+          { name: "Nadiad Express Toll", time: "Arrived at 04:00 PM", passed: true },
+          { name: "Vadodara Central Bus Station", time: "Arrived at 04:55 PM", passed: true },
+          { name: "Bharuch Narmada Bridge", time: "Arrived at 06:15 PM", passed: true },
+          { name: "Ankleshwar GIDC Cut", time: "Arrived at 06:40 PM", passed: true },
+          { name: "Kim Char Rasta", time: "Expected 07:20 PM", passed: false },
+          { name: "Surat Central Bus Station", time: "Expected 07:55 PM", passed: false }
+        ],
+        coordinates: [
+          [23.5600, 72.7500],
+          [23.2156, 72.6369],
+          [23.0135, 72.5913],
+          [22.6916, 72.8634],
+          [22.3107, 73.1812],
+          [21.7051, 72.9959],
+          [21.6264, 73.0152],
+          [21.4012, 72.9281],
+          [21.2050, 72.8407]
+        ]
+      }
+    ];
+
+    /* -------------------------------------------------------------
+       STATE MANAGEMENT
+    ------------------------------------------------------------- */
+    let currentScreen = 'screen-dashboard';
+    let currentSelectedBus = BUS_DATABASE[6]; // Default: Vijapur to Surat
+    let leafletMapInstance = null;
+    let leafletBusMarker = null;
+    let leafletPolyline = null;
+    let leafletMarkers = [];
+    let animationInterval = null;
+    let simulationT = 0.65; // starting point along the route
+
+    /* -------------------------------------------------------------
+       NAVIGATION ENGINE
+    ------------------------------------------------------------- */
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.add('hidden'));
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.remove('hidden');
+        currentScreen = screenId;
+      }
+      lucide.createIcons();
+    }
+
+    function navToDashboard() {
+      showScreen('screen-dashboard');
+    }
+
+    function navToRoutes(defaultFrom, defaultTo) {
+      if (defaultFrom) document.getElementById('route-from-input').value = defaultFrom;
+      if (defaultTo) document.getElementById('route-to-input').value = defaultTo;
+      showScreen('screen-routes');
+    }
+
+    function navToBusList() {
+      showScreen('screen-buslist');
+    }
+
+    function setFastRoute(from, to) {
+      document.getElementById('route-from-input').value = from;
+      document.getElementById('route-to-input').value = to;
+    }
+
+    function swapFromTo() {
+      const fromEl = document.getElementById('route-from-input');
+      const toEl = document.getElementById('route-to-input');
+      const temp = fromEl.value;
+      fromEl.value = toEl.value;
+      toEl.value = temp;
+    }
+
+    function clearInput(id) {
+      document.getElementById(id).value = '';
+      document.getElementById(id).focus();
+    }
+
+    /* -------------------------------------------------------------
+       ROUTE SEARCH & BUS LIST RENDERING (Screenshot 3 Matching)
+    ------------------------------------------------------------- */
+    function handleRouteSearch(e) {
+      if (e) e.preventDefault();
+      
+      const from = document.getElementById('route-from-input').value.trim();
+      const to = document.getElementById('route-to-input').value.trim();
+      const typeFilter = document.getElementById('route-type-select').value;
+
+      renderBusList(from, to, typeFilter);
+      showScreen('screen-buslist');
+    }
+
+    function renderBusList(fromQuery, toQuery, typeFilter) {
+      const container = document.getElementById('bus-cards-list');
+      container.innerHTML = "";
+
+      // Match or fallback to all relevant buses
+      let filtered = BUS_DATABASE.filter(bus => {
+        const matchesFrom = !fromQuery || bus.title.toLowerCase().includes(fromQuery.toLowerCase()) || bus.from.toLowerCase().includes(fromQuery.toLowerCase());
+        const matchesTo = !toQuery || bus.title.toLowerCase().includes(toQuery.toLowerCase()) || bus.to.toLowerCase().includes(toQuery.toLowerCase());
+        const matchesType = !typeFilter || typeFilter === "All" || bus.type === typeFilter;
+        return (matchesFrom || matchesTo) && matchesType;
+      });
+
+      if (filtered.length === 0) {
+        filtered = BUS_DATABASE; // Show list so user always sees the exact UI cards
+      }
+
+      filtered.forEach(bus => {
+        const isRunning = bus.status === "Running";
+        const statusBadgeClass = isRunning ? "text-[#2e7d32]" : "text-[#1565c0]";
+
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-300 rounded-md p-3 shadow-xs hover:border-slate-400 active:bg-slate-50 cursor-pointer transition-all";
+        card.onclick = () => openBusDetails(bus);
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <h3 class="font-bold text-slate-800 text-sm">${bus.title}</h3>
+            <span class="text-xs font-semibold ${statusBadgeClass}">
+              ${bus.status}
+            </span>
+          </div>
+          
+          <div class="mt-1 text-xs text-slate-600 space-y-0.5">
+            <div>Bus No: <span class="font-semibold text-slate-700">${bus.busNo}</span></div>
+            <div>Type: <span class="text-slate-700">${bus.type}</span></div>
+            <div>Arrival Time: <span class="font-medium text-slate-800">${bus.arrival}</span></div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    /* -------------------------------------------------------------
+       ROUTE DETAILS (Stations Timeline & Map)
+    ------------------------------------------------------------- */
+    function openBusDetails(bus) {
+      currentSelectedBus = bus;
+
+      // Populate Header Card (Screenshots 4 & 5)
+      document.getElementById('detail-route-title').innerText = bus.title;
+      document.getElementById('detail-bus-no').innerText = bus.busNo;
+      document.getElementById('detail-bus-type').innerText = bus.type;
+      document.getElementById('detail-km').innerText = bus.distance;
+      document.getElementById('detail-hr').innerText = bus.time;
+
+      const badge = document.getElementById('detail-badge-status');
+      badge.innerText = bus.status;
+      if (bus.status === "Running") {
+        badge.className = "text-xs font-semibold text-[#2e7d32] bg-green-50 px-2 py-0.5 rounded border border-green-200";
+      } else {
+        badge.className = "text-xs font-semibold text-[#1565c0] bg-blue-50 px-2 py-0.5 rounded border border-blue-200";
+      }
+
+      // Populate Timeline (Screenshot 4)
+      renderTimelineStops(bus);
+
+      // Default subview to 'station'
+      switchRouteSubView('station');
+      showScreen('screen-routedetails');
+    }
+
+    function openBusTrackDirect(busNo, title) {
+      const found = BUS_DATABASE.find(b => b.busNo === busNo) || BUS_DATABASE[6];
+      openBusDetails(found);
+      switchRouteSubView('map');
+    }
+
+    function renderTimelineStops(bus) {
+      const container = document.getElementById('stations-timeline-container');
+      container.innerHTML = "";
+
+      bus.stops.forEach((stop, index) => {
+        const isLast = index === bus.stops.length - 1;
+        const item = document.createElement('div');
+        item.className = "flex items-start gap-3 relative";
+
+        // Vertical Connecting Line
+        const connectorHtml = !isLast ? `
+          <div class="absolute left-2.5 top-5 bottom-0 w-0.5 bg-slate-200 -z-0"></div>
+        ` : '';
+
+        // Radio Button Icon (Exact match to screenshot 4)
+        const radioIconHtml = stop.passed ? `
+          <div class="w-5 h-5 rounded-full border-2 border-red-600 flex items-center justify-center bg-white z-10 flex-shrink-0 mt-0.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-red-600"></div>
+          </div>
+        ` : `
+          <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center bg-white z-10 flex-shrink-0 mt-0.5">
+          </div>
+        `;
+
+        item.innerHTML = `
+          ${connectorHtml}
+          ${radioIconHtml}
+          <div class="flex-1 pb-3">
+            <h4 class="text-xs font-bold text-slate-800 leading-tight">${stop.name}</h4>
+            <p class="text-[11px] text-slate-500 mt-0.5">${stop.time}</p>
+          </div>
+        `;
+
+        container.appendChild(item);
+      });
+    }
+
+    /* -------------------------------------------------------------
+       SUBVIEW TOGGLE: STATION vs MAP (Screenshots 4 & 5)
+    ------------------------------------------------------------- */
+    function switchRouteSubView(view) {
+      const stationView = document.getElementById('subview-station');
+      const mapView = document.getElementById('subview-map');
+      const btnStation = document.getElementById('tab-btn-station');
+      const btnMap = document.getElementById('tab-btn-map');
+
+      if (view === 'station') {
+        stationView.classList.remove('hidden');
+        mapView.classList.add('hidden');
+
+        btnStation.className = "flex flex-col items-center justify-center text-red-600 font-semibold text-xs active:bg-slate-50";
+        btnMap.className = "flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 text-xs active:bg-slate-50";
+      } else {
+        stationView.classList.add('hidden');
+        mapView.classList.remove('hidden');
+
+        btnStation.className = "flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 text-xs active:bg-slate-50";
+        btnMap.className = "flex flex-col items-center justify-center text-red-600 font-semibold text-xs active:bg-slate-50";
+
+        setTimeout(() => {
+          initOrUpdateMap();
+        }, 150);
+      }
+      lucide.createIcons();
+    }
+
+    /* -------------------------------------------------------------
+       LEAFLET MAP & ANIMATED BUS SIMULATION (Screenshot 5)
+    ------------------------------------------------------------- */
+    function initOrUpdateMap() {
+      const container = document.getElementById('leaflet-route-map');
+      if (!container) return;
+
+      if (!leafletMapInstance) {
+        // Initialize OpenStreetMap tiles
+        leafletMapInstance = L.map('leaflet-route-map', {
+          zoomControl: true,
+          attributionControl: false
+        }).setView([22.3107, 73.1812], 8);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+        }).addTo(leafletMapInstance);
+      }
+
+      leafletMapInstance.invalidateSize();
+      drawSelectedRouteOnMap();
+    }
+
+    function drawSelectedRouteOnMap() {
+      if (!leafletMapInstance || !currentSelectedBus) return;
+
+      // Clean existing layers
+      if (leafletPolyline) leafletMapInstance.removeLayer(leafletPolyline);
+      if (leafletBusMarker) leafletMapInstance.removeLayer(leafletBusMarker);
+      leafletMarkers.forEach(m => leafletMapInstance.removeLayer(m));
+      leafletMarkers = [];
+
+      const coords = currentSelectedBus.coordinates;
+      if (!coords || coords.length === 0) return;
+
+      // 1. Red Route Polyline (Matching screenshot 5)
+      leafletPolyline = L.polyline(coords, {
+        color: '#dc2626', // Vibrant GSRTC Red
+        weight: 5,
+        opacity: 0.9,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(leafletMapInstance);
+
+      // 2. Origin & Destination Red Pin Markers
+      const startPinHtml = `
+        <div style="color: #dc2626; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#ffffff"/></svg>
+        </div>
+      `;
+      const endPinHtml = `
+        <div style="color: #991b1b; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#b91c1c" stroke="#ffffff" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#ffffff"/></svg>
+        </div>
+      `;
+
+      const startIcon = L.divIcon({ html: startPinHtml, className: '', iconSize: [28, 28], iconAnchor: [14, 28] });
+      const endIcon = L.divIcon({ html: endPinHtml, className: '', iconSize: [28, 28], iconAnchor: [14, 28] });
+
+      const startMarker = L.marker(coords[0], { icon: startIcon }).addTo(leafletMapInstance);
+      const endMarker = L.marker(coords[coords.length - 1], { icon: endIcon }).addTo(leafletMapInstance);
+      leafletMarkers.push(startMarker, endMarker);
+
+      // 3. Intermediate Stop Dots along the path
+      for (let i = 1; i < coords.length - 1; i++) {
+        const dotIcon = L.divIcon({
+          html: `<div style="width: 10px; height: 10px; background: #374151; border: 2px solid white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.4);"></div>`,
+          className: '',
+          iconSize: [10, 10],
+          iconAnchor: [5, 5]
+        });
+        const m = L.marker(coords[i], { icon: dotIcon }).addTo(leafletMapInstance);
+        leafletMarkers.push(m);
+      }
+
+      // 4. Moving GSRTC Bus Icon with glowing ring (Screenshot 5)
+      const busMarkerHtml = `
+        <div style="position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+          <div class="pulse-ring-indicator"></div>
+          <div style="background: #111827; border: 2px solid #ffffff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.5);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10"/><path d="M7 12h10"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/></svg>
+          </div>
+        </div>
+      `;
+
+      const busIcon = L.divIcon({
+        html: busMarkerHtml,
+        className: '',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+
+      const currentCoord = interpolatePath(simulationT, coords);
+      leafletBusMarker = L.marker(currentCoord, { icon: busIcon, zIndexOffset: 1000 }).addTo(leafletMapInstance);
+
+      // Fit map view
+      leafletMapInstance.fitBounds(leafletPolyline.getBounds(), { padding: [40, 40] });
+
+      // Start Realtime Movement Loop
+      startBusAnimation(coords);
+    }
+
+    function interpolatePath(t, waypoints) {
+      if (!waypoints || waypoints.length === 0) return [22.3107, 73.1812];
+      if (t <= 0) return waypoints[0];
+      if (t >= 1) return waypoints[waypoints.length - 1];
+
+      const segments = waypoints.length - 1;
+      const progress = t * segments;
+      const index = Math.floor(progress);
+      const frac = progress - index;
+
+      const p1 = waypoints[index];
+      const p2 = waypoints[Math.min(index + 1, segments)];
+
+      return [
+        p1[0] + (p2[0] - p1[0]) * frac,
+        p1[1] + (p2[1] - p1[1]) * frac
+      ];
+    }
+
+    function startBusAnimation(coords) {
+      if (animationInterval) clearInterval(animationInterval);
+
+      animationInterval = setInterval(() => {
+        simulationT += 0.004;
+        if (simulationT > 0.98) simulationT = 0.05;
+
+        if (leafletBusMarker && leafletMapInstance) {
+          const newPos = interpolatePath(simulationT, coords);
+          leafletBusMarker.setLatLng(newPos);
+        }
+      }, 800);
+    }
+
+    function recenterLeafletMap() {
+      if (!leafletMapInstance || !leafletBusMarker) return;
+      leafletMapInstance.setView(leafletBusMarker.getLatLng(), 11, { animate: true });
+    }
+
+    function shareRouteDetails() {
+      const shareText = `GSRTC Live: ${currentSelectedBus.title} (${currentSelectedBus.busNo}) - Status: ${currentSelectedBus.status}. Track live.`;
+      if (navigator.share) {
+        navigator.share({ title: 'GSRTC Live Route', text: shareText }).catch(() => {});
+      } else {
+        alert(shareText);
+      }
+    }
+
+    /* -------------------------------------------------------------
+       APP INITIALIZATION
+    ------------------------------------------------------------- */
+    window.onload = function() {
+      lucide.createIcons();
+
+      // Setup Live Clock in Status Bar
+      const updateClock = () => {
+        const now = new Date();
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      };
+      updateClock();
+      setInterval(updateClock, 30000);
+
+      // Prepopulate bus list
+      renderBusList("Ahmedabad", "Navsari", "All");
+    };
+  </script>
+</body>
+</html>
