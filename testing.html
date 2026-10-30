@@ -148,7 +148,7 @@
       border-radius: 50%;
     }
 
-    /* 3D Menu Card */
+    /* 3D Raised Menu Card */
     .menu-card {
       width: 100%;
       max-width: 340px;
@@ -756,7 +756,7 @@
             <option value="Luxury">Luxury</option>
           </select>
 
-          <!-- Fully Connected Departure Time Slot Selector -->
+          <!-- Departure Time Slot Filter -->
           <select class="select-box" id="time-slot-filter">
             <option value="ALL">All Departure Times</option>
             <option value="MORNING">Morning (06:00 AM - 12:00 PM)</option>
@@ -776,11 +776,10 @@
           <span style="font-size: 12px; color: #64748b; font-weight: 600;">Popular Routes:</span>
           <div class="quick-chips">
             <div class="chip" onclick="setRoute('Valsad', 'Nana Pondha')">Valsad → Nana Pondha</div>
-            <div class="chip" onclick="setRoute('Ambheti', 'Valsad')">Ambheti → Valsad</div>
-            <div class="chip" onclick="setRoute('Valsad', 'Vapi')">Valsad → Vapi (Direct)</div>
+            <div class="chip" onclick="setRoute('Vapi', 'Kaprada')">Vapi → Kaprada (via Ambheti)</div>
+            <div class="chip" onclick="setRoute('Valsad', 'Vapi')">Valsad → Vapi (Direct NH-48)</div>
             <div class="chip" onclick="setRoute('Dharampur', 'Valsad')">Dharampur → Valsad</div>
-            <div class="chip" onclick="setRoute('Valsad', 'Surat')">Valsad → Surat (Direct)</div>
-            <div class="chip" onclick="setRoute('Kaprada', 'Valsad')">Kaprada → Valsad</div>
+            <div class="chip" onclick="setRoute('Valsad', 'Surat')">Valsad → Surat (Direct NH-48)</div>
           </div>
         </div>
       </div>
@@ -815,7 +814,7 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
             <div id="det-route-title" style="font-size: 16px; font-weight: 700; color: #0f172a;">Valsad to Nana Pondha</div>
-            <div id="det-bus-no" style="font-size: 12.5px; color: #64748b; margin-top: 3px; font-weight: 500;">Bus No: GJ-15-Z-4512</div>
+            <div id="det-bus-no" style="font-size: 12.5px; color: #64748b; margin-top: 3px; font-weight: 500;">Bus No: GJ-15-Z-3321</div>
             <div id="det-bus-type" style="font-size: 12.5px; color: #64748b; font-weight: 500;">Type: Express</div>
           </div>
           <span id="det-status" class="bus-status-badge status-running" style="position:static;">Running</span>
@@ -824,12 +823,12 @@
         <div class="stats-split-grid">
           <div class="stat-pill">
             <div class="label">Km</div>
-            <div id="det-km" class="value">48.50</div>
+            <div id="det-km" class="value">45.00</div>
             <div class="label">Distance</div>
           </div>
           <div class="stat-pill">
             <div class="label">Hr</div>
-            <div id="det-time" class="value">01:35:00</div>
+            <div id="det-time" class="value">01:15:00</div>
             <div class="label">Time</div>
           </div>
         </div>
@@ -885,10 +884,9 @@
       "Surat", "Bharuch", "Vadodara", "Anand", "Nadiad", "Ahmedabad"
     ];
 
-    // Real Fixed Scheduled Timetable for Gujarat & Valsad Routes
-    // DepHour is 24-hr fixed departure time on the schedule!
+    // Real Scheduled Timetable with Accurate Sequences
     const SCHEDULED_ROUTES = [
-      // === VALSAD TO NANA PONDHA (3 Multi-Slot Buses) ===
+      // === 1. VALSAD TO NANA PONDHA (via Dharampur & Barumal only - NO AMBHETI) ===
       {
         id: "RT-NP-MORN",
         from: "Valsad",
@@ -896,17 +894,16 @@
         busNo: "GJ-15-Z-3321",
         type: "Express",
         depHour: 7, depMin: 30, // 07:30 AM (MORNING)
-        durationMinutes: 95,
-        distanceKm: "48.50",
+        durationMinutes: 75,
+        distanceKm: "45.00",
         stops: [
           { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
-          { name: "Valsad RTO Circle", offset: 12, lat: 20.6025, lng: 72.9480 },
-          { name: "Atak Pardi", offset: 22, lat: 20.5820, lng: 73.0110 },
-          { name: "Dharampur Chokdi", offset: 34, lat: 20.5510, lng: 73.1550 },
-          { name: "Dharampur ST Stand", offset: 48, lat: 20.5404, lng: 73.1772 },
-          { name: "Ambheti Cross Road", offset: 63, lat: 20.4985, lng: 73.1250 },
-          { name: "Barumal (Bhavani Temple)", offset: 75, lat: 20.4850, lng: 73.1420 },
-          { name: "Nana Pondha Depot", offset: 95, lat: 20.4124, lng: 73.0851 }
+          { name: "Valsad RTO Circle", offset: 10, lat: 20.6025, lng: 72.9480 },
+          { name: "Atak Pardi", offset: 20, lat: 20.5820, lng: 73.0110 },
+          { name: "Dharampur Chokdi", offset: 30, lat: 20.5510, lng: 73.1550 },
+          { name: "Dharampur ST Stand", offset: 42, lat: 20.5404, lng: 73.1772 },
+          { name: "Barumal (Bhavani Temple)", offset: 58, lat: 20.4850, lng: 73.1420 },
+          { name: "Nana Pondha Depot", offset: 75, lat: 20.4124, lng: 73.0851 }
         ]
       },
       {
@@ -916,17 +913,16 @@
         busNo: "GJ-15-Z-4512",
         type: "Express",
         depHour: 13, depMin: 15, // 01:15 PM (AFTERNOON)
-        durationMinutes: 95,
-        distanceKm: "48.50",
+        durationMinutes: 75,
+        distanceKm: "45.00",
         stops: [
           { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
-          { name: "Valsad RTO Circle", offset: 12, lat: 20.6025, lng: 72.9480 },
-          { name: "Atak Pardi", offset: 22, lat: 20.5820, lng: 73.0110 },
-          { name: "Dharampur Chokdi", offset: 34, lat: 20.5510, lng: 73.1550 },
-          { name: "Dharampur ST Stand", offset: 48, lat: 20.5404, lng: 73.1772 },
-          { name: "Ambheti Cross Road", offset: 63, lat: 20.4985, lng: 73.1250 },
-          { name: "Barumal (Bhavani Temple)", offset: 75, lat: 20.4850, lng: 73.1420 },
-          { name: "Nana Pondha Depot", offset: 95, lat: 20.4124, lng: 73.0851 }
+          { name: "Valsad RTO Circle", offset: 10, lat: 20.6025, lng: 72.9480 },
+          { name: "Atak Pardi", offset: 20, lat: 20.5820, lng: 73.0110 },
+          { name: "Dharampur Chokdi", offset: 30, lat: 20.5510, lng: 73.1550 },
+          { name: "Dharampur ST Stand", offset: 42, lat: 20.5404, lng: 73.1772 },
+          { name: "Barumal (Bhavani Temple)", offset: 58, lat: 20.4850, lng: 73.1420 },
+          { name: "Nana Pondha Depot", offset: 75, lat: 20.4124, lng: 73.0851 }
         ]
       },
       {
@@ -936,21 +932,56 @@
         busNo: "GJ-15-Z-7819",
         type: "Express",
         depHour: 18, depMin: 45, // 06:45 PM (EVENING)
-        durationMinutes: 95,
-        distanceKm: "48.50",
+        durationMinutes: 75,
+        distanceKm: "45.00",
         stops: [
           { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
-          { name: "Valsad RTO Circle", offset: 12, lat: 20.6025, lng: 72.9480 },
-          { name: "Atak Pardi", offset: 22, lat: 20.5820, lng: 73.0110 },
-          { name: "Dharampur Chokdi", offset: 34, lat: 20.5510, lng: 73.1550 },
-          { name: "Dharampur ST Stand", offset: 48, lat: 20.5404, lng: 73.1772 },
-          { name: "Ambheti Cross Road", offset: 63, lat: 20.4985, lng: 73.1250 },
-          { name: "Barumal (Bhavani Temple)", offset: 75, lat: 20.4850, lng: 73.1420 },
-          { name: "Nana Pondha Depot", offset: 95, lat: 20.4124, lng: 73.0851 }
+          { name: "Valsad RTO Circle", offset: 10, lat: 20.6025, lng: 72.9480 },
+          { name: "Atak Pardi", offset: 20, lat: 20.5820, lng: 73.0110 },
+          { name: "Dharampur Chokdi", offset: 30, lat: 20.5510, lng: 73.1550 },
+          { name: "Dharampur ST Stand", offset: 42, lat: 20.5404, lng: 73.1772 },
+          { name: "Barumal (Bhavani Temple)", offset: 58, lat: 20.4850, lng: 73.1420 },
+          { name: "Nana Pondha Depot", offset: 75, lat: 20.4124, lng: 73.0851 }
         ]
       },
 
-      // === DHARAMPUR TO VALSAD SHUTTLE ===
+      // === 2. ACTUAL AMBHETI CORRIDOR: VAPI TO KAPRADA (via Chala, Ambheti, Mota Pondha) ===
+      {
+        id: "RT-AMB-01",
+        from: "Vapi",
+        to: "Kaprada",
+        busNo: "GJ-15-Z-4120",
+        type: "Express",
+        depHour: 8, depMin: 0, // 08:00 AM (MORNING)
+        durationMinutes: 65,
+        distanceKm: "38.00",
+        stops: [
+          { name: "Vapi ST Depot", offset: 0, lat: 20.3893, lng: 72.9106 },
+          { name: "Chala Cross Road", offset: 12, lat: 20.3780, lng: 72.9050 },
+          { name: "Ambheti", offset: 28, lat: 20.4985, lng: 73.1250 },
+          { name: "Mota Pondha", offset: 45, lat: 20.3850, lng: 73.1400 },
+          { name: "Kaprada ST Stand", offset: 65, lat: 20.3421, lng: 73.2089 }
+        ]
+      },
+      {
+        id: "RT-AMB-02",
+        from: "Kaprada",
+        to: "Vapi",
+        busNo: "GJ-15-Z-4121",
+        type: "Express",
+        depHour: 16, depMin: 15, // 04:15 PM (AFTERNOON)
+        durationMinutes: 65,
+        distanceKm: "38.00",
+        stops: [
+          { name: "Kaprada ST Stand", offset: 0, lat: 20.3421, lng: 73.2089 },
+          { name: "Mota Pondha", offset: 20, lat: 20.3850, lng: 73.1400 },
+          { name: "Ambheti", offset: 37, lat: 20.4985, lng: 73.1250 },
+          { name: "Chala Cross Road", offset: 53, lat: 20.3780, lng: 72.9050 },
+          { name: "Vapi ST Depot", offset: 65, lat: 20.3893, lng: 72.9106 }
+        ]
+      },
+
+      // === 3. DHARAMPUR TO VALSAD SHUTTLE ===
       {
         id: "RT-DHM-01",
         from: "Dharampur",
@@ -986,7 +1017,7 @@
         ]
       },
 
-      // === DIRECT HIGHWAY: VALSAD TO VAPI (NH-48) ===
+      // === 4. DIRECT NH-48: VALSAD TO VAPI (NO DHARAMPUR) ===
       {
         id: "RT-VAPI-MORN",
         from: "Valsad",
@@ -1022,7 +1053,7 @@
         ]
       },
 
-      // === DIRECT HIGHWAY: VALSAD TO SURAT (NH-48) ===
+      // === 5. DIRECT NH-48: VALSAD TO SURAT (NO DHARAMPUR) ===
       {
         id: "RT-SURAT-MORN",
         from: "Valsad",
@@ -1058,33 +1089,10 @@
           { name: "Navsari Bypass", offset: 75, lat: 20.9467, lng: 72.9279 },
           { name: "Surat Central Depot", offset: 110, lat: 21.2054, lng: 72.8398 }
         ]
-      },
-
-      // === KAPRADA TO VALSAD VIA NANA PONDHA, AMBHETI & DHARAMPUR ===
-      {
-        id: "RT-KAP-01",
-        from: "Kaprada",
-        to: "Valsad",
-        busNo: "GJ-15-Z-5211",
-        type: "Express",
-        depHour: 6, depMin: 45, // 06:45 AM (MORNING)
-        durationMinutes: 125,
-        distanceKm: "68.50",
-        stops: [
-          { name: "Kaprada ST Stand", offset: 0, lat: 20.3421, lng: 73.2089 },
-          { name: "Sutharpada", offset: 15, lat: 20.3610, lng: 73.1750 },
-          { name: "Mota Pondha", offset: 32, lat: 20.3850, lng: 73.1400 },
-          { name: "Nana Pondha Depot", offset: 48, lat: 20.4124, lng: 73.0851 },
-          { name: "Barumal Cross Road", offset: 65, lat: 20.4850, lng: 73.1420 },
-          { name: "Ambheti", offset: 75, lat: 20.4985, lng: 73.1250 },
-          { name: "Dharampur ST Stand", offset: 90, lat: 20.5404, lng: 73.1772 },
-          { name: "Dharampur Chokdi", offset: 102, lat: 20.5510, lng: 73.1550 },
-          { name: "Valsad ST Depot", offset: 125, lat: 20.6100, lng: 72.9342 }
-        ]
       }
     ];
 
-    // Compute Live Status According to Actual Clock
+    // Compute Status based on Current Device Clock
     function getComputedRoutes() {
       const now = new Date();
       const curTotalMinutes = now.getHours() * 60 + now.getMinutes();
@@ -1092,8 +1100,6 @@
       return SCHEDULED_ROUTES.map(route => {
         const depMinute = route.depHour * 60 + route.depMin;
         const arrMinute = depMinute + route.durationMinutes;
-
-        // Bus is running if current time falls within [departure, arrival]
         const isRunning = (curTotalMinutes >= depMinute && curTotalMinutes < arrMinute);
 
         const stops = route.stops.map(st => {
@@ -1240,7 +1246,6 @@
         const matchesDirection = (fromIdx !== -1 && toIdx !== -1 && fromIdx < toIdx);
         const matchCoach = (coachType === 'All') || (route.type === coachType);
 
-        // Filter by Selected Departure Slot
         let matchSlot = true;
         const depMin = route.depMinutes;
         if (slotFilter === "MORNING") {
@@ -1264,7 +1269,7 @@
         container.innerHTML = `
           <div style="text-align:center; padding: 45px 20px; color:#64748b;">
             <p style="font-size:16px; font-weight:700; color:#0f172a;">No Buses Found</p>
-            <p style="font-size:13px; margin-top:6px;">No bus matches the selected departure time slot. Try selecting "All Departure Times".</p>
+            <p style="font-size:13px; margin-top:6px;">No buses found for this time slot. Try selecting "All Departure Times".</p>
           </div>
         `;
       } else {
