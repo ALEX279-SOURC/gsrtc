@@ -18,31 +18,33 @@
     }
 
     body {
-      background-color: #0b111e;
+      background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0b111e 100%);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      perspective: 1200px;
     }
 
-    /* Mobile Container Frame */
+    /* 3D Mobile Container Frame */
     .app-viewport {
       width: 100%;
       max-width: 420px;
       height: 100vh;
       max-height: 890px;
-      background: #ffffff;
+      background: #f1f5f9;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
     }
 
     @media (min-width: 480px) {
       .app-viewport {
-        border-radius: 28px;
+        border-radius: 36px;
         height: 94vh;
+        border: 4px solid #1e293b;
       }
     }
 
@@ -50,7 +52,7 @@
     .screen {
       position: absolute;
       inset: 0;
-      background: #f7f9fc;
+      background: #f1f5f9;
       display: none;
       flex-direction: column;
       overflow-y: auto;
@@ -61,46 +63,54 @@
       display: flex;
     }
 
-    /* Universal Header for Inner Screens */
+    /* 3D Elevated Header */
     .screen-header {
       background: #ffffff;
-      height: 56px;
+      height: 60px;
       display: flex;
       align-items: center;
-      padding: 0 16px;
-      border-bottom: 1px solid #eef2f6;
+      padding: 0 18px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       position: sticky;
       top: 0;
       z-index: 50;
     }
 
     .screen-header .back-btn {
-      background: none;
-      border: none;
-      font-size: 22px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 20px;
       cursor: pointer;
-      color: #222;
+      color: #334155;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 38px;
-      height: 38px;
-      margin-left: -6px;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+      transition: all 0.15s ease;
+    }
+
+    .screen-header .back-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
 
     .screen-header .header-title {
       flex: 1;
       text-align: center;
       font-size: 17px;
-      font-weight: 600;
-      color: #222;
-      margin-right: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-right: 40px;
+      letter-spacing: -0.3px;
     }
 
-    /* ================= SCREEN 1: DASHBOARD ================= */
+    /* ================= SCREEN 1: 3D DASHBOARD ================= */
     #screen-dashboard {
-      background: #ffffff;
-      padding: 26px 20px 20px 20px;
+      background: #f8fafc;
+      padding: 30px 20px 20px 20px;
       justify-content: space-between;
       overflow-y: auto;
     }
@@ -112,25 +122,25 @@
       width: 100%;
     }
 
-    /* 3D Compact Official Logo */
+    /* 3D Floating Official Logo */
     .gsrtc-logo-container {
-      width: 95px;
-      height: 95px;
-      margin-top: 25px;
-      margin-bottom: 25px;
+      width: 100px;
+      height: 100px;
+      margin-top: 15px;
+      margin-bottom: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
       background: transparent;
-      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22))
-              drop-shadow(0 15px 25px rgba(26, 86, 219, 0.25));
-      transform: perspective(600px) translateZ(10px);
-      transition: transform 0.25s ease, filter 0.25s ease;
+      filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.28))
+              drop-shadow(0 4px 6px rgba(37, 99, 235, 0.3));
+      transform: perspective(600px) translateZ(18px);
+      transition: transform 0.3s ease, filter 0.3s ease;
     }
 
     .gsrtc-logo-container:active {
-      transform: perspective(600px) translateZ(0px) scale(0.96);
+      transform: perspective(600px) translateZ(5px) scale(0.96);
     }
 
     .gsrtc-logo-container img {
@@ -141,28 +151,30 @@
       border-radius: 50%;
     }
 
-    /* 2x2 Grid Menu */
+    /* 3D Neumorphic Raised Menu Card */
     .menu-card {
       width: 100%;
       max-width: 340px;
       background: #ffffff;
-      border: 1px solid #eef1f6;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      border-radius: 22px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.9);
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       position: relative;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      overflow: hidden;
     }
 
+    /* 3D Inset Dividers */
     .menu-card::before {
       content: "";
       position: absolute;
-      top: 15%;
-      bottom: 15%;
+      top: 12%;
+      bottom: 12%;
       left: 50%;
       width: 1px;
-      background: #f1b3b3;
+      background: linear-gradient(180deg, transparent, #fca5a5, transparent);
       transform: translateX(-50%);
     }
 
@@ -173,7 +185,7 @@
       right: 10%;
       top: 50%;
       height: 1px;
-      background: #f1b3b3;
+      background: linear-gradient(90deg, transparent, #fca5a5, transparent);
       transform: translateY(-50%);
     }
 
@@ -182,26 +194,28 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px 12px;
+      padding: 26px 14px;
       cursor: pointer;
       user-select: none;
-      transition: background 0.15s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .menu-item:active {
-      background: #fafafa;
+      background: #f8fafc;
+      transform: scale(0.96);
     }
 
     .menu-item svg {
       width: 44px;
       height: 44px;
       margin-bottom: 12px;
+      filter: drop-shadow(0 4px 6px rgba(229, 57, 53, 0.25));
     }
 
     .menu-item span {
       font-size: 13px;
-      font-weight: 500;
-      color: #333333;
+      font-weight: 600;
+      color: #334155;
       text-align: center;
     }
 
@@ -209,29 +223,31 @@
       width: 100%;
       display: flex;
       justify-content: center;
-      opacity: 0.8;
+      opacity: 0.85;
       padding-top: 25px;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.05));
     }
 
-    /* ================= SCREEN 2: ROUTES SEARCH ================= */
+    /* ================= SCREEN 2: 3D ROUTES SEARCH ================= */
     .search-body {
-      padding: 16px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .input-group-card {
-      background: #f3f5f8;
-      border-radius: 8px;
+      background: #ffffff;
+      border-radius: 16px;
       position: relative;
-      border: 1px solid #e5e9f0;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
     .input-row {
       display: flex;
       align-items: center;
-      padding: 8px 12px;
+      padding: 12px 14px;
       position: relative;
     }
 
@@ -240,63 +256,75 @@
       border: none;
       background: transparent;
       outline: none;
-      font-size: 14.5px;
-      font-weight: 500;
-      color: #222;
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f172a;
     }
 
     .clear-btn {
-      background: none;
+      background: #f1f5f9;
       border: none;
-      color: #8c97a7;
-      font-size: 16px;
+      color: #64748b;
+      font-size: 14px;
       cursor: pointer;
-      padding: 4px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .swap-btn {
       position: absolute;
-      right: 28px;
+      right: 24px;
       top: 50%;
       transform: translateY(-50%);
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       background: #ffffff;
-      border: 1px solid #d9dfe7;
+      border: 1px solid #cbd5e1;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 5;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transition: transform 0.2s ease;
     }
 
-    /* Autocomplete Suggestion Dropdown */
+    .swap-btn:active {
+      transform: translateY(-50%) rotate(180deg) scale(0.95);
+    }
+
+    /* 3D Elevated Autocomplete Dropdown */
     .autocomplete-list {
       position: absolute;
       top: 100%;
       left: 0;
       right: 0;
       background: #ffffff;
-      border: 1px solid #d9dfe7;
-      border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-      max-height: 180px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+      max-height: 200px;
       overflow-y: auto;
       z-index: 100;
       display: none;
     }
 
     .autocomplete-item {
-      padding: 10px 14px;
-      font-size: 13.5px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
       color: #334155;
       cursor: pointer;
       border-bottom: 1px solid #f1f5f9;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      transition: background 0.15s;
     }
 
     .autocomplete-item:last-child {
@@ -304,174 +332,203 @@
     }
 
     .autocomplete-item:hover, .autocomplete-item:active {
-      background: #f8fafc;
+      background: #fef2f2;
       color: #e53935;
     }
 
     .filter-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
 
     .select-box {
-      background: #f3f5f8;
-      border: 1px solid #e5e9f0;
-      border-radius: 8px;
-      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
       font-size: 13.5px;
-      color: #333;
+      font-weight: 500;
+      color: #334155;
       outline: none;
       width: 100%;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     }
 
     .date-row {
-      background: #f3f5f8;
-      border: 1px solid #e5e9f0;
-      border-radius: 8px;
-      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 13.5px;
-      color: #555;
+      font-weight: 500;
+      color: #64748b;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     }
 
     .date-row input {
       border: none;
       background: transparent;
       outline: none;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #222;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
       text-align: right;
     }
 
+    /* 3D Embossed Red Action Button */
     .btn-red {
-      background: #e53935;
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
       color: #ffffff;
       border: none;
-      border-radius: 8px;
-      padding: 13px;
-      font-size: 15px;
-      font-weight: 600;
+      border-radius: 14px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
       cursor: pointer;
       width: 100%;
-      margin-top: 4px;
-      box-shadow: 0 4px 10px rgba(229, 57, 53, 0.25);
+      margin-top: 6px;
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .btn-red:active {
-      background: #d32f2f;
+      transform: translateY(2px);
+      box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
     }
 
     .quick-chips {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       flex-wrap: wrap;
       margin-top: 10px;
     }
 
     .chip {
-      background: #eef2f7;
-      padding: 6px 12px;
-      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 8px 14px;
+      border-radius: 20px;
       font-size: 12px;
-      color: #4a5568;
+      font-weight: 600;
+      color: #475569;
       cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.03);
+      transition: all 0.15s;
     }
 
-    /* ================= SCREEN 3: BUS LIST ================= */
+    .chip:active {
+      transform: scale(0.95);
+      background: #f1f5f9;
+    }
+
+    /* ================= SCREEN 3: 3D BUS CARDS ================= */
     .bus-list-content {
-      padding: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .bus-item-card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 14px 14px 12px 14px;
+      border-radius: 18px;
+      padding: 16px 16px 14px 16px;
       position: relative;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transition: all 0.2s ease;
     }
 
     .bus-item-card:active {
-      border-color: #cbd5e1;
-      background: #fafbfc;
+      transform: translateY(2px) scale(0.99);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
     }
 
     .bus-card-title {
-      font-size: 14.5px;
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 5px;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
     }
 
     .bus-card-meta {
-      font-size: 12px;
+      font-size: 12.5px;
       color: #64748b;
-      line-height: 1.5;
+      line-height: 1.6;
+      font-weight: 500;
     }
 
+    /* 3D Glowing Badges */
     .bus-status-badge {
       position: absolute;
-      right: 14px;
-      bottom: 12px;
-      font-size: 12.5px;
-      font-weight: 600;
+      right: 16px;
+      bottom: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
     }
 
     .status-running {
       color: #16a34a;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
     }
 
     .status-scheduled {
       color: #2563eb;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
     }
 
-    /* ================= SCREEN 4: ROUTE DETAILS ================= */
+    /* ================= SCREEN 4: 3D ROUTE DETAILS ================= */
     .route-details-box {
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      margin: 14px;
-      padding: 14px;
+      border-radius: 18px;
+      margin: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
     .stats-split-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 12px;
+      margin-top: 14px;
     }
 
     .stat-pill {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 8px;
+      border-radius: 12px;
+      padding: 10px;
       text-align: center;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
     }
 
     .stat-pill .label {
       font-size: 11px;
+      font-weight: 600;
       color: #64748b;
     }
 
     .stat-pill .value {
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       color: #e53935;
-      margin: 2px 0;
+      margin: 3px 0;
     }
 
-    /* Station Timeline */
+    /* 3D Timeline */
     .timeline-container {
-      padding: 10px 24px;
+      padding: 10px 26px;
       display: flex;
       flex-direction: column;
     }
@@ -480,7 +537,7 @@
       display: flex;
       gap: 16px;
       position: relative;
-      padding-bottom: 24px;
+      padding-bottom: 26px;
     }
 
     .timeline-node:last-child {
@@ -492,8 +549,9 @@
       left: 7px;
       top: 16px;
       bottom: 0;
-      width: 2px;
-      background: #fca5a5;
+      width: 2.5px;
+      background: linear-gradient(180deg, #f87171, #cbd5e1);
+      border-radius: 2px;
     }
 
     .timeline-node:last-child .timeline-line {
@@ -501,10 +559,10 @@
     }
 
     .radio-circle {
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
       border-radius: 50%;
-      border: 2px solid #ef4444;
+      border: 2.5px solid #ef4444;
       background: #ffffff;
       display: flex;
       align-items: center;
@@ -512,11 +570,12 @@
       z-index: 2;
       flex-shrink: 0;
       margin-top: 3px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     }
 
     .radio-circle.passed {
       background: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25);
     }
 
     .radio-circle.passed::after {
@@ -528,13 +587,14 @@
     }
 
     .stop-details h4 {
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #334155;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
     }
 
     .stop-details p {
-      font-size: 11px;
+      font-size: 11.5px;
+      font-weight: 500;
       color: #64748b;
       margin-top: 2px;
     }
@@ -547,15 +607,16 @@
       z-index: 1;
     }
 
-    /* Bottom Sub-Navigation */
+    /* 3D Elevated Bottom Tab Bar */
     .bottom-tab-bar {
-      height: 60px;
+      height: 64px;
       background: #ffffff;
       border-top: 1px solid #eef2f6;
       display: flex;
       position: sticky;
       bottom: 0;
       z-index: 50;
+      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.05);
     }
 
     .tab-btn {
@@ -568,13 +629,15 @@
       border: none;
       cursor: pointer;
       color: #94a3b8;
-      font-size: 11px;
-      font-weight: 500;
-      gap: 3px;
+      font-size: 11.5px;
+      font-weight: 600;
+      gap: 4px;
+      transition: all 0.2s;
     }
 
     .tab-btn.active {
       color: #ef4444;
+      transform: translateY(-2px);
     }
 
     .tab-btn svg {
@@ -583,22 +646,23 @@
       fill: currentColor;
     }
 
+    /* 3D Pulsing Bus Marker */
     .bus-marker-pin {
-      background: #ef4444;
-      border: 2.5px solid #ffffff;
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      border: 3px solid #ffffff;
       border-radius: 50%;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+      box-shadow: 0 8px 18px rgba(239, 68, 68, 0.6);
       animation: pulse 1.8s infinite;
     }
 
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
-      70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
       100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
   </style>
@@ -611,10 +675,12 @@
     <div id="screen-dashboard" class="screen active">
       <div class="dashboard-top">
         
+        <!-- 3D Floating Official Logo -->
         <div class="gsrtc-logo-container">
           <img src="assets/logo.png" alt="GSRTC Official Logo" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/ALEX279-SOURC/gsrtc/main/assets/logo.png';" />
         </div>
 
+        <!-- 3D Menu Grid -->
         <div class="menu-card">
           <div class="menu-item" onclick="showScreen('screen-search')">
             <svg viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -682,7 +748,7 @@
 
       <div class="search-body">
         <div class="input-group-card">
-          <div class="input-row" style="border-bottom: 1px solid #e5e9f0; position: relative;">
+          <div class="input-row" style="border-bottom: 1px solid #eef2f6; position: relative;">
             <input type="text" id="from-station" value="Valsad" placeholder="From Station / Village" autocomplete="off" oninput="handleStationInput('from-station', 'from-suggestions')" />
             <button class="clear-btn" onclick="clearInput('from-station')">✕</button>
             <div id="from-suggestions" class="autocomplete-list"></div>
@@ -691,7 +757,7 @@
           <button class="swap-btn" onclick="swapLocations()">⇅</button>
 
           <div class="input-row" style="position: relative;">
-            <input type="text" id="to-station" value="Nana Pondha" placeholder="To Station / Village" autocomplete="off" oninput="handleStationInput('to-station', 'to-suggestions')" />
+            <input type="text" id="to-station" value="Vapi" placeholder="To Station / Village" autocomplete="off" oninput="handleStationInput('to-station', 'to-suggestions')" />
             <button class="clear-btn" onclick="clearInput('to-station')">✕</button>
             <div id="to-suggestions" class="autocomplete-list"></div>
           </div>
@@ -721,15 +787,14 @@
         <button class="btn-red" onclick="filterAndRenderBuses()">Search Bus</button>
 
         <div style="margin-top: 10px;">
-          <span style="font-size: 12px; color: #64748b; font-weight: 500;">Popular Valsad District Routes:</span>
+          <span style="font-size: 12px; color: #64748b; font-weight: 600;">Popular Valsad District Routes:</span>
           <div class="quick-chips">
+            <div class="chip" onclick="setRoute('Valsad', 'Vapi')">Valsad → Vapi (Direct)</div>
+            <div class="chip" onclick="setRoute('Valsad', 'Surat')">Valsad → Surat (Direct)</div>
             <div class="chip" onclick="setRoute('Ambheti', 'Valsad')">Ambheti → Valsad</div>
             <div class="chip" onclick="setRoute('Valsad', 'Nana Pondha')">Valsad → Nana Pondha</div>
             <div class="chip" onclick="setRoute('Dharampur', 'Valsad')">Dharampur → Valsad</div>
-            <div class="chip" onclick="setRoute('Nana Pondha', 'Vapi')">Nana Pondha → Vapi</div>
             <div class="chip" onclick="setRoute('Kaprada', 'Valsad')">Kaprada → Valsad</div>
-            <div class="chip" onclick="setRoute('Valsad', 'Bhilad')">Valsad → Bhilad</div>
-            <div class="chip" onclick="setRoute('Valsad', 'Ahmedabad')">Valsad → Ahmedabad</div>
           </div>
         </div>
       </div>
@@ -752,8 +817,8 @@
       <div class="screen-header">
         <button class="back-btn" onclick="showScreen('screen-list')">←</button>
         <div class="header-title">Route Details</div>
-        <button style="background:none; border:none; cursor:pointer; color:#475569;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="back-btn" style="width:36px; height:36px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
           </svg>
@@ -763,9 +828,9 @@
       <div class="route-details-box">
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
-            <div id="det-route-title" style="font-size: 15px; font-weight: 700; color: #0f172a;">Valsad to Nana Pondha</div>
-            <div id="det-bus-no" style="font-size: 12px; color: #64748b; margin-top: 3px;">Bus No: GJ-15-Z-4512</div>
-            <div id="det-bus-type" style="font-size: 12px; color: #64748b;">Type: Express</div>
+            <div id="det-route-title" style="font-size: 16px; font-weight: 700; color: #0f172a;">Valsad to Vapi</div>
+            <div id="det-bus-no" style="font-size: 12.5px; color: #64748b; margin-top: 3px; font-weight: 500;">Bus No: GJ-15-Z-1822</div>
+            <div id="det-bus-type" style="font-size: 12.5px; color: #64748b; font-weight: 500;">Type: Express</div>
           </div>
           <span id="det-status" class="bus-status-badge status-running" style="position:static;">Running</span>
         </div>
@@ -773,12 +838,12 @@
         <div class="stats-split-grid">
           <div class="stat-pill">
             <div class="label">Km</div>
-            <div id="det-km" class="value">48.50</div>
+            <div id="det-km" class="value">30.00</div>
             <div class="label">Distance</div>
           </div>
           <div class="stat-pill">
             <div class="label">Hr</div>
-            <div id="det-time" class="value">01:35:00</div>
+            <div id="det-time" class="value">00:45:00</div>
             <div class="label">Time</div>
           </div>
         </div>
@@ -816,7 +881,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Format Minutes to AM/PM Time Format
     function formatMinutesToTime(totalMinutes) {
       totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
       let hours = Math.floor(totalMinutes / 60);
@@ -827,7 +891,6 @@
       return `${hours}:${mStr} ${ampm}`;
     }
 
-    // All Unique Stations & Villages in Valsad District & Connected Routes
     const ALL_STATIONS = [
       "Valsad", "Dharampur", "Nana Pondha", "Ambheti", "Mota Pondha",
       "Kaprada", "Barumal", "Sutharpada", "Atak Pardi", "Pardi",
@@ -836,11 +899,67 @@
       "Surat", "Bharuch", "Vadodara", "Anand", "Nadiad", "Ahmedabad"
     ];
 
-    // Comprehensive Valsad District Rural & Urban Network Dataset
+    // Segregated Routes: Direct Highway (NH-48) vs Interior Dharampur/Ambheti Routes
     const BASE_ROUTES = [
-      // 1. Valsad to Nana Pondha via Dharampur, Ambheti & Barumal
+      // 1. Direct Highway: Valsad to Vapi (NO DHARAMPUR)
       {
-        id: "RT-VLD-01",
+        id: "RT-HWY-01",
+        from: "Valsad",
+        to: "Vapi",
+        busNo: "GJ-15-Z-1822",
+        type: "Express",
+        durationMinutes: 45,
+        distanceKm: "30.00",
+        depOffset: -15,
+        stopsOffset: [
+          { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
+          { name: "Atul First Gate", offset: 12, lat: 20.5360, lng: 72.9490 },
+          { name: "Pardi Bus Stand", offset: 25, lat: 20.5130, lng: 72.9520 },
+          { name: "Udvada R.S. Chokdi", offset: 34, lat: 20.4650, lng: 72.9350 },
+          { name: "Vapi ST Depot", offset: 45, lat: 20.3893, lng: 72.9106 }
+        ]
+      },
+      // 2. Direct Highway: Valsad to Surat (NO DHARAMPUR)
+      {
+        id: "RT-HWY-02",
+        from: "Valsad",
+        to: "Surat",
+        busNo: "GJ-15-Z-9014",
+        type: "Express",
+        durationMinutes: 110,
+        distanceKm: "92.00",
+        depOffset: -40,
+        stopsOffset: [
+          { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
+          { name: "Dungri Highway Stand", offset: 18, lat: 20.6850, lng: 72.9650 },
+          { name: "Bilimora ST Depot", offset: 35, lat: 20.7621, lng: 72.9689 },
+          { name: "Chikhli Cross Road", offset: 50, lat: 20.7570, lng: 73.0645 },
+          { name: "Navsari Bypass", offset: 75, lat: 20.9467, lng: 72.9279 },
+          { name: "Surat Central Depot", offset: 110, lat: 21.2054, lng: 72.8398 }
+        ]
+      },
+      // 3. Direct Highway: Valsad to Bhilad (NO DHARAMPUR)
+      {
+        id: "RT-HWY-03",
+        from: "Valsad",
+        to: "Bhilad",
+        busNo: "GJ-15-Z-2210",
+        type: "Express",
+        durationMinutes: 70,
+        distanceKm: "45.00",
+        depOffset: 20,
+        stopsOffset: [
+          { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
+          { name: "Atul First Gate", offset: 12, lat: 20.5360, lng: 72.9490 },
+          { name: "Pardi Bus Stand", offset: 25, lat: 20.5130, lng: 72.9520 },
+          { name: "Vapi ST Depot", offset: 48, lat: 20.3893, lng: 72.9106 },
+          { name: "Koparli Cross Road", offset: 58, lat: 20.3400, lng: 72.9350 },
+          { name: "Bhilad R.S. Chokdi", offset: 70, lat: 20.2850, lng: 72.9100 }
+        ]
+      },
+      // 4. Interior Route: Valsad to Nana Pondha via Dharampur, Ambheti & Barumal
+      {
+        id: "RT-DHM-01",
         from: "Valsad",
         to: "Nana Pondha",
         busNo: "GJ-15-Z-4512",
@@ -859,16 +978,16 @@
           { name: "Nana Pondha Depot", offset: 95, lat: 20.4124, lng: 73.0851 }
         ]
       },
-      // 2. Dharampur to Valsad Return Route
+      // 5. Interior Shuttle: Dharampur to Valsad
       {
-        id: "RT-VLD-02",
+        id: "RT-DHM-02",
         from: "Dharampur",
         to: "Valsad",
         busNo: "GJ-15-Z-3890",
         type: "Express",
         durationMinutes: 50,
         distanceKm: "32.00",
-        depOffset: 25,
+        depOffset: 15,
         stopsOffset: [
           { name: "Dharampur ST Stand", offset: 0, lat: 20.5404, lng: 73.1772 },
           { name: "Dharampur Chokdi", offset: 14, lat: 20.5510, lng: 73.1550 },
@@ -877,9 +996,9 @@
           { name: "Valsad ST Depot", offset: 50, lat: 20.6100, lng: 72.9342 }
         ]
       },
-      // 3. Kaprada to Valsad via Sutharpada, Mota Pondha, Nana Pondha, Ambheti & Dharampur
+      // 6. Interior Tribal Route: Kaprada to Valsad via Sutharpada, Nana Pondha, Ambheti & Dharampur
       {
-        id: "RT-VLD-03",
+        id: "RT-DHM-03",
         from: "Kaprada",
         to: "Valsad",
         busNo: "GJ-15-Z-5211",
@@ -899,68 +1018,9 @@
           { name: "Valsad ST Depot", offset: 125, lat: 20.6100, lng: 72.9342 }
         ]
       },
-      // 4. Nana Pondha to Vapi via Ambheti, Dharampur & Chala
+      // 7. Coastal Shuttle: Tithal Beach to Dungri (NO DHARAMPUR)
       {
-        id: "RT-VLD-04",
-        from: "Nana Pondha",
-        to: "Vapi",
-        busNo: "GJ-15-Z-6119",
-        type: "Express",
-        durationMinutes: 75,
-        distanceKm: "42.00",
-        depOffset: -15,
-        stopsOffset: [
-          { name: "Nana Pondha Depot", offset: 0, lat: 20.4124, lng: 73.0851 },
-          { name: "Barumal Cross Road", offset: 18, lat: 20.4850, lng: 73.1420 },
-          { name: "Ambheti", offset: 28, lat: 20.4985, lng: 73.1250 },
-          { name: "Dharampur ST Stand", offset: 42, lat: 20.5404, lng: 73.1772 },
-          { name: "Koliwad", offset: 52, lat: 20.4500, lng: 73.0100 },
-          { name: "Chala", offset: 64, lat: 20.3780, lng: 72.9050 },
-          { name: "Vapi ST Depot", offset: 75, lat: 20.3893, lng: 72.9106 }
-        ]
-      },
-      // 5. Valsad to Bhilad via Atul, Pardi & Udvada
-      {
-        id: "RT-VLD-05",
-        from: "Valsad",
-        to: "Bhilad",
-        busNo: "GJ-15-Z-2210",
-        type: "Express",
-        durationMinutes: 80,
-        distanceKm: "45.00",
-        depOffset: -25,
-        stopsOffset: [
-          { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
-          { name: "Atul First Gate", offset: 12, lat: 20.5360, lng: 72.9490 },
-          { name: "Pardi Bus Stand", offset: 25, lat: 20.5130, lng: 72.9520 },
-          { name: "Udvada R.S. Chokdi", offset: 38, lat: 20.4650, lng: 72.9350 },
-          { name: "Vapi ST Depot", offset: 55, lat: 20.3893, lng: 72.9106 },
-          { name: "Koparli Cross Road", offset: 68, lat: 20.3400, lng: 72.9350 },
-          { name: "Bhilad R.S. Chokdi", offset: 80, lat: 20.2850, lng: 72.9100 }
-        ]
-      },
-      // 6. Valsad to Umbergaon & Sanjan Coastal Belt
-      {
-        id: "RT-VLD-06",
-        from: "Valsad",
-        to: "Umbergaon",
-        busNo: "GJ-15-Z-3104",
-        type: "Express",
-        durationMinutes: 110,
-        distanceKm: "65.00",
-        depOffset: 45,
-        stopsOffset: [
-          { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
-          { name: "Pardi Bus Stand", offset: 25, lat: 20.5130, lng: 72.9520 },
-          { name: "Vapi ST Depot", offset: 50, lat: 20.3893, lng: 72.9106 },
-          { name: "Bhilad Chokdi", offset: 70, lat: 20.2850, lng: 72.9100 },
-          { name: "Sanjan ST Stand", offset: 88, lat: 20.2010, lng: 72.8680 },
-          { name: "Umbergaon ST Stand", offset: 110, lat: 20.1900, lng: 72.7600 }
-        ]
-      },
-      // 7. Valsad Local Coastal Route (Tithal to Dungri)
-      {
-        id: "RT-VLD-07",
+        id: "RT-LOC-01",
         from: "Tithal Beach",
         to: "Dungri",
         busNo: "GJ-15-Z-1011",
@@ -969,39 +1029,36 @@
         distanceKm: "20.00",
         depOffset: -10,
         stopsOffset: [
-          { name: "Tithal Swaminarayan Temple", offset: 0, lat: 20.5960, lng: 72.9020 },
+          { name: "Tithal Beach", offset: 0, lat: 20.5960, lng: 72.9020 },
           { name: "Valsad Circuit House", offset: 10, lat: 20.6050, lng: 72.9200 },
           { name: "Valsad ST Depot", offset: 20, lat: 20.6100, lng: 72.9342 },
           { name: "Gundlav GIDC", offset: 32, lat: 20.6350, lng: 72.9750 },
           { name: "Dungri ST Stand", offset: 45, lat: 20.6850, lng: 72.9650 }
         ]
       },
-      // 8. Valsad to Surat & Ahmedabad Long Route
+      // 8. Long Highway Express: Valsad to Ahmedabad (NO DHARAMPUR)
       {
-        id: "RT-VLD-08",
+        id: "RT-HWY-04",
         from: "Valsad",
         to: "Ahmedabad",
         busNo: "GJ-18-AZ-9146",
         type: "Volvo 2x2",
-        durationMinutes: 405,
+        durationMinutes: 380,
         distanceKm: "336.50",
         depOffset: -75,
         stopsOffset: [
           { name: "Valsad ST Depot", offset: 0, lat: 20.6100, lng: 72.9342 },
-          { name: "Dungri", offset: 20, lat: 20.6850, lng: 72.9650 },
-          { name: "Bilimora ST Depot", offset: 40, lat: 20.7621, lng: 72.9689 },
-          { name: "Chikhli Cross Road", offset: 55, lat: 20.7570, lng: 73.0645 },
-          { name: "Navsari Bypass", offset: 80, lat: 20.9467, lng: 72.9279 },
-          { name: "Surat Central Depot", offset: 130, lat: 21.2054, lng: 72.8398 },
-          { name: "Ankleshwar GIDC", offset: 195, lat: 21.6264, lng: 73.0033 },
-          { name: "Vadodara Central", offset: 270, lat: 22.3107, lng: 73.1812 },
-          { name: "Nadiad Expressway", offset: 325, lat: 22.6916, lng: 72.8634 },
-          { name: "Ahmedabad Ranip", offset: 405, lat: 23.0768, lng: 72.5830 }
+          { name: "Bilimora ST Depot", offset: 35, lat: 20.7621, lng: 72.9689 },
+          { name: "Navsari Bypass", offset: 70, lat: 20.9467, lng: 72.9279 },
+          { name: "Surat Central Depot", offset: 115, lat: 21.2054, lng: 72.8398 },
+          { name: "Ankleshwar GIDC", offset: 175, lat: 21.6264, lng: 73.0033 },
+          { name: "Vadodara Central", offset: 245, lat: 22.3107, lng: 73.1812 },
+          { name: "Nadiad Expressway", offset: 300, lat: 22.6916, lng: 72.8634 },
+          { name: "Ahmedabad Ranip", offset: 380, lat: 23.0768, lng: 72.5830 }
         ]
       }
     ];
 
-    // Compute Dynamic Live Time
     function getLiveRoutesData() {
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -1049,7 +1106,6 @@
     let stopMarkersGroup = null;
     let animTimer = null;
 
-    // View Navigation
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const target = document.getElementById(screenId);
@@ -1074,7 +1130,6 @@
       filterAndRenderBuses();
     }
 
-    // Autocomplete Logic
     function handleStationInput(inputId, dropdownId) {
       const input = document.getElementById(inputId);
       const dropdown = document.getElementById(dropdownId);
@@ -1097,7 +1152,7 @@
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
         item.innerHTML = `
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
             <circle cx="12" cy="9" r="2.5"/>
           </svg>
@@ -1118,7 +1173,6 @@
       document.getElementById(dropdownId).style.display = 'none';
     }
 
-    // Close autocomplete when clicking outside
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.input-row')) {
         const fromDrop = document.getElementById('from-suggestions');
@@ -1128,7 +1182,7 @@
       }
     });
 
-    // SMART EN-ROUTE SEARCH: Searches Start, End or Any Village / Passing Halt
+    // Direction-Aware Sequential Highway Search
     function filterAndRenderBuses() {
       const liveRoutes = getLiveRoutesData();
       const fromInput = document.getElementById('from-station').value.trim().toLowerCase();
@@ -1136,17 +1190,27 @@
       const coachType = document.getElementById('coach-type').value;
 
       const filtered = liveRoutes.filter(route => {
-        const matchFrom = !fromInput || 
-                          route.from.toLowerCase().includes(fromInput) || 
-                          route.stops.some(s => s.name.toLowerCase().includes(fromInput));
+        let fromIdx = -1;
+        let toIdx = -1;
 
-        const matchTo = !toInput || 
-                        route.to.toLowerCase().includes(toInput) || 
-                        route.stops.some(s => s.name.toLowerCase().includes(toInput));
+        if (!fromInput) {
+          fromIdx = 0;
+        } else {
+          fromIdx = route.stops.findIndex(s => s.name.toLowerCase().includes(fromInput));
+          if (fromIdx === -1 && route.from.toLowerCase().includes(fromInput)) fromIdx = 0;
+        }
 
+        if (!toInput) {
+          toIdx = route.stops.length - 1;
+        } else {
+          toIdx = route.stops.findIndex(s => s.name.toLowerCase().includes(toInput));
+          if (toIdx === -1 && route.to.toLowerCase().includes(toInput)) toIdx = route.stops.length - 1;
+        }
+
+        const matchesDirection = (fromIdx !== -1 && toIdx !== -1 && fromIdx < toIdx);
         const matchCoach = (coachType === 'All') || (route.type === coachType);
 
-        return matchFrom && matchTo && matchCoach;
+        return matchesDirection && matchCoach;
       });
 
       const container = document.querySelector('.bus-list-content');
@@ -1154,9 +1218,9 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center; padding: 40px 20px; color:#64748b;">
-            <p style="font-size:15px; font-weight:600; color:#1e293b;">No Buses Found</p>
-            <p style="font-size:13px; margin-top:6px;">Try searching for Valsad, Ambheti, Dharampur, Nana Pondha, or Vapi.</p>
+          <div style="text-align:center; padding: 45px 20px; color:#64748b;">
+            <p style="font-size:16px; font-weight:700; color:#0f172a;">No Buses Found</p>
+            <p style="font-size:13px; margin-top:6px;">Try searching Valsad to Vapi, Surat, Dharampur, or Ambheti.</p>
           </div>
         `;
       } else {
@@ -1179,7 +1243,6 @@
       showScreen('screen-list');
     }
 
-    // Load Timeline & Details
     function loadRouteDetails(routeId) {
       const liveRoutes = getLiveRoutesData();
       const route = liveRoutes.find(r => r.id === routeId) || liveRoutes[0];
@@ -1195,7 +1258,6 @@
       stEl.innerText = route.status;
       stEl.className = 'bus-status-badge ' + (route.status === 'Running' ? 'status-running' : 'status-scheduled');
 
-      // Populate Stops Timeline
       const container = document.getElementById('timeline-list');
       container.innerHTML = '';
       route.stops.forEach((stop) => {
@@ -1215,7 +1277,6 @@
       showScreen('screen-details');
     }
 
-    // Tab Switch between Station List & Map
     function switchDetailTab(type) {
       const timelineView = document.getElementById('view-timeline');
       const mapView = document.getElementById('view-map');
@@ -1236,16 +1297,15 @@
       }
     }
 
-    // Leaflet GPS Highway Map Render
     function initOrRefreshMap() {
       if (!currentRoute) return;
       const waypoints = currentRoute.stops.map(s => [s.lat, s.lng]);
 
       const busIcon = L.divIcon({
         className: 'bus-marker-pin',
-        html: `<svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14]
+        html: `<svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
       });
 
       if (!leafletMapInstance) {
@@ -1255,8 +1315,8 @@
 
         routePolyline = L.polyline(waypoints, {
           color: '#e53935',
-          weight: 4.5,
-          opacity: 0.9,
+          weight: 5,
+          opacity: 0.95,
           lineCap: 'round',
           lineJoin: 'round'
         }).addTo(leafletMapInstance);
@@ -1271,10 +1331,10 @@
       currentRoute.stops.forEach((st, idx) => {
         if (idx === 0 || idx === currentRoute.stops.length - 1 || st.passed) {
           L.circleMarker([st.lat, st.lng], {
-            radius: 5.5,
+            radius: 6,
             fillColor: '#ffffff',
             color: '#dc2626',
-            weight: 3,
+            weight: 3.5,
             fillOpacity: 1
           }).addTo(stopMarkersGroup).bindPopup(`<b>${st.name}</b><br>${st.time}`);
         }
@@ -1282,7 +1342,6 @@
 
       leafletMapInstance.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
 
-      // Live GPS Telemetry Moving Animation
       if (animTimer) clearInterval(animTimer);
 
       let animProgress = 0;
@@ -1305,7 +1364,6 @@
       }, 150);
     }
 
-    // Set Current Date & Initialize
     window.addEventListener('DOMContentLoaded', () => {
       const today = new Date();
       const dd = String(today.getDate()).padStart(2, '0');
