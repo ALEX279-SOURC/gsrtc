@@ -112,28 +112,36 @@
       width: 100%;
     }
 
-    /* Updated GSRTC Logo */
-    .gsrtc-logo-container {
-      width: 130px;
-      height: 130px;
-      margin-top: 15px;
-      margin-bottom: 35px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: #ffffff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      padding: 4px;
-    }
+    /* 3D Compact Logo without outer dark borders */
+.gsrtc-logo-container {
+  width: 95px;
+  height: 95px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  /* Multi-layered 3D elevation shadow */
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22))
+          drop-shadow(0 15px 25px rgba(26, 86, 219, 0.25));
+  transform: perspective(600px) translateZ(10px);
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
 
-    .gsrtc-logo-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 50%;
-    }
+.gsrtc-logo-container:active {
+  transform: perspective(600px) translateZ(0px) scale(0.96);
+}
+
+.gsrtc-logo-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Bahar ka black background trim karke sirf main circular logo dikhana */
+  clip-path: circle(46% at center);
+  border-radius: 50%;
+}
 
     /* 2x2 Grid Menu */
     .menu-card {
