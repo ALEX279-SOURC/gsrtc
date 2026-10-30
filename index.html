@@ -113,35 +113,33 @@
     }
 
     /* 3D Compact Logo without outer dark borders */
-.gsrtc-logo-container {
-  width: 95px;
-  height: 95px;
-  margin-top: 25px;
-  margin-bottom: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: transparent;
-  /* Multi-layered 3D elevation shadow */
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22))
-          drop-shadow(0 15px 25px rgba(26, 86, 219, 0.25));
-  transform: perspective(600px) translateZ(10px);
-  transition: transform 0.25s ease, filter 0.25s ease;
-}
+    .gsrtc-logo-container {
+      width: 95px;
+      height: 95px;
+      margin-top: 25px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22))
+              drop-shadow(0 15px 25px rgba(26, 86, 219, 0.25));
+      transform: perspective(600px) translateZ(10px);
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
 
-.gsrtc-logo-container:active {
-  transform: perspective(600px) translateZ(0px) scale(0.96);
-}
+    .gsrtc-logo-container:active {
+      transform: perspective(600px) translateZ(0px) scale(0.96);
+    }
 
-.gsrtc-logo-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Bahar ka black background trim karke sirf main circular logo dikhana */
-  clip-path: circle(46% at center);
-  border-radius: 50%;
-}
+    .gsrtc-logo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      clip-path: circle(46% at center);
+      border-radius: 50%;
+    }
 
     /* 2x2 Grid Menu */
     .menu-card {
@@ -208,7 +206,6 @@
       text-align: center;
     }
 
-    /* Bus Stop Illustration at bottom */
     .dashboard-footer {
       width: 100%;
       display: flex;
@@ -333,7 +330,6 @@
       background: #d32f2f;
     }
 
-    /* Popular Quick Chips */
     .quick-chips {
       display: flex;
       gap: 6px;
@@ -402,7 +398,7 @@
       color: #2563eb;
     }
 
-    /* ================= SCREEN 4: ROUTE DETAILS (STATION / MAP) ================= */
+    /* ================= SCREEN 4: ROUTE DETAILS ================= */
     .route-details-box {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -516,7 +512,7 @@
       z-index: 1;
     }
 
-    /* Bottom Sub-Navigation (Station / Map) */
+    /* Bottom Sub-Navigation */
     .bottom-tab-bar {
       height: 60px;
       background: #ffffff;
@@ -552,7 +548,6 @@
       fill: currentColor;
     }
 
-    /* Pulse Pin on Map */
     .bus-marker-pin {
       background: #ef4444;
       border: 2.5px solid #ffffff;
@@ -577,16 +572,13 @@
 
   <div class="app-viewport">
     
-    <!-- ================= SCREEN 1: DASHBOARD ================= -->
+    <!-- SCREEN 1: DASHBOARD -->
     <div id="screen-dashboard" class="screen active">
       <div class="dashboard-top">
-        
-        <!-- Updated Logo Path (assets/logo.png) -->
         <div class="gsrtc-logo-container">
           <img src="assets/logo.png" alt="GSRTC Official Logo" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/ALEX279-SOURC/gsrtc/main/assets/logo.png';" />
         </div>
 
-        <!-- 2x2 Grid Section -->
         <div class="menu-card">
           <div class="menu-item" onclick="showScreen('screen-search')">
             <svg viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -616,7 +608,7 @@
             <span>Time Table</span>
           </div>
 
-          <div class="menu-item" onclick="showScreen('screen-list')">
+          <div class="menu-item" onclick="filterAndRenderBuses()">
             <svg viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="5" width="16" height="11" rx="2" stroke="#e53935"/>
               <circle cx="8" cy="18" r="2" fill="#e53935"/>
@@ -627,10 +619,8 @@
             <span>Track My Bus</span>
           </div>
         </div>
-
       </div>
 
-      <!-- Bus Stand Graphic at Bottom -->
       <div class="dashboard-footer">
         <svg width="220" height="70" viewBox="0 0 220 70" fill="none" opacity="0.6">
           <rect x="20" y="32" width="55" height="35" rx="5" fill="#cbd5e1"/>
@@ -646,7 +636,7 @@
       </div>
     </div>
 
-    <!-- ================= SCREEN 2: SEARCH ROUTES ================= -->
+    <!-- SCREEN 2: SEARCH ROUTES -->
     <div id="screen-search" class="screen">
       <div class="screen-header">
         <button class="back-btn" onclick="showScreen('screen-dashboard')">←</button>
@@ -689,7 +679,7 @@
           <input type="text" value="30/10/2026" />
         </div>
 
-        <button class="btn-red" onclick="showScreen('screen-list')">Search Bus</button>
+        <button class="btn-red" onclick="filterAndRenderBuses()">Search Bus</button>
 
         <div style="margin-top: 10px;">
           <span style="font-size: 12px; color: #64748b; font-weight: 500;">Quick Select Routes:</span>
@@ -698,12 +688,14 @@
             <div class="chip" onclick="setRoute('Ahmedabad', 'Navsari')">Ahmedabad → Navsari</div>
             <div class="chip" onclick="setRoute('Sachivalay', 'Bavla')">Sachivalay → Bavla</div>
             <div class="chip" onclick="setRoute('Valsad', 'Ahmedabad')">Valsad → Ahmedabad</div>
+            <div class="chip" onclick="setRoute('Ahmedabad', 'Rajkot')">Ahmedabad → Rajkot</div>
+            <div class="chip" onclick="setRoute('Surat', 'Dwarka')">Surat → Dwarka</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ================= SCREEN 3: BUS LIST ================= -->
+    <!-- SCREEN 3: BUS LIST -->
     <div id="screen-list" class="screen">
       <div class="screen-header">
         <button class="back-btn" onclick="showScreen('screen-search')">←</button>
@@ -711,49 +703,11 @@
       </div>
 
       <div class="bus-list-content">
-        <div class="bus-item-card" onclick="openRouteDetails('Vijapur to Surat', 'GJ-18-Z-7899', 'Express', '343.82', '06:15:00', 'Running')">
-          <div class="bus-card-title">Vijapur to Surat</div>
-          <div class="bus-card-meta">Bus No: GJ-18-Z-7899</div>
-          <div class="bus-card-meta">Type: Express</div>
-          <div class="bus-card-meta">Arrival Time: 07:15 PM</div>
-          <div class="bus-status-badge status-running">Running</div>
-        </div>
-
-        <div class="bus-item-card" onclick="openRouteDetails('Sachivalay to Bavla', 'GJ-18-Z-6066', 'Express', '56.88', '01:25:00', 'Running')">
-          <div class="bus-card-title">Sachivalay to Bavla</div>
-          <div class="bus-card-meta">Bus No: GJ-18-Z-6066</div>
-          <div class="bus-card-meta">Type: Express</div>
-          <div class="bus-card-meta">Arrival Time: 7:26 PM</div>
-          <div class="bus-status-badge status-running">Running</div>
-        </div>
-
-        <div class="bus-item-card" onclick="openRouteDetails('Somnath to Vijapur', 'GJ-18-Z-6740', 'Express', '412.50', '08:45:00', 'Scheduled')">
-          <div class="bus-card-title">Somnath to Vijapur</div>
-          <div class="bus-card-meta">Bus No: GJ-18-Z-6740</div>
-          <div class="bus-card-meta">Type: Express</div>
-          <div class="bus-card-meta">Arrival Time: 7:25 PM</div>
-          <div class="bus-status-badge status-scheduled">Scheduled</div>
-        </div>
-
-        <div class="bus-item-card" onclick="openRouteDetails('Ahmedabad to Rajkot - Volvo', 'GJ-18-AZ-9146', 'Volvo 2x2', '215.30', '03:45:00', 'Running')">
-          <div class="bus-card-title">Ahmedabad to Rajkot - Volvo</div>
-          <div class="bus-card-meta">Bus No: GJ-18-AZ-9146</div>
-          <div class="bus-card-meta">Type: Volvo 2x2</div>
-          <div class="bus-card-meta">Arrival Time: 7:32 PM</div>
-          <div class="bus-status-badge status-running">Running</div>
-        </div>
-
-        <div class="bus-item-card" onclick="openRouteDetails('Radhanpur to Ahmedabad', 'GJ-18-Z-8030', 'Express', '168.00', '03:10:00', 'Scheduled')">
-          <div class="bus-card-title">Radhanpur to Ahmedabad</div>
-          <div class="bus-card-meta">Bus No: GJ-18-Z-8030</div>
-          <div class="bus-card-meta">Type: Express</div>
-          <div class="bus-card-meta">Arrival Time: 7:35 PM</div>
-          <div class="bus-status-badge status-scheduled">Scheduled</div>
-        </div>
+        <!-- Dynamically rendered via JS -->
       </div>
     </div>
 
-    <!-- ================= SCREEN 4 & 5: ROUTE DETAILS (TIMELINE & MAP) ================= -->
+    <!-- SCREEN 4 & 5: ROUTE DETAILS (TIMELINE & MAP) -->
     <div id="screen-details" class="screen">
       <div class="screen-header">
         <button class="back-btn" onclick="showScreen('screen-list')">←</button>
@@ -766,7 +720,6 @@
         </button>
       </div>
 
-      <!-- Top Route Info Card -->
       <div class="route-details-box">
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
@@ -791,7 +744,6 @@
         </div>
       </div>
 
-      <!-- Content Views (Station Timeline vs Live Leaflet Map) -->
       <div id="view-timeline" style="flex:1;">
         <div class="timeline-container" id="timeline-list">
           <!-- Dynamically inserted -->
@@ -802,7 +754,6 @@
         <div id="leaflet-map"></div>
       </div>
 
-      <!-- Bottom Sub Tabs -->
       <div class="bottom-tab-bar">
         <button id="tab-btn-station" class="tab-btn active" onclick="switchDetailTab('station')">
           <svg viewBox="0 0 24 24">
@@ -825,7 +776,143 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Navigation Router
+    // Comprehensive Static Dataset of GSRTC Gujarat Corridors
+    const GSRTC_ROUTES_DB = [
+      {
+        id: "RT-01",
+        from: "Vijapur",
+        to: "Surat",
+        busNo: "GJ-18-Z-7899",
+        type: "Express",
+        departure: "01:00 PM",
+        arrival: "07:15 PM",
+        duration: "06:15:00",
+        distanceKm: "343.82",
+        status: "Running",
+        stops: [
+          { name: "Vijapur ST Stand", time: "01:00 PM", passed: true, lat: 23.5623, lng: 72.7533 },
+          { name: "Himmatnagar Cross Road", time: "01:45 PM", passed: true, lat: 23.5979, lng: 72.9698 },
+          { name: "Gandhinagar CH Road", time: "02:40 PM", passed: true, lat: 23.2156, lng: 72.6369 },
+          { name: "Ahmedabad Geeta Mandir", time: "03:30 PM", passed: true, lat: 23.0125, lng: 72.5910 },
+          { name: "Nadiad Express Highway", time: "04:22 PM", passed: true, lat: 22.6916, lng: 72.8634 },
+          { name: "Vadodara Central Bus Station", time: "05:15 PM", passed: true, lat: 22.3107, lng: 73.1812 },
+          { name: "Bharuch Toll Plaza", time: "06:10 PM", passed: false, lat: 21.7051, lng: 72.9959 },
+          { name: "Surat Central (GSRTC)", time: "07:15 PM", passed: false, lat: 21.2054, lng: 72.8398 }
+        ]
+      },
+      {
+        id: "RT-02",
+        from: "Ahmedabad",
+        to: "Navsari",
+        busNo: "GJ-18-Z-6066",
+        type: "Express",
+        departure: "02:15 PM",
+        arrival: "07:45 PM",
+        duration: "05:30:00",
+        distanceKm: "285.40",
+        status: "Running",
+        stops: [
+          { name: "Ahmedabad Geeta Mandir", time: "02:15 PM", passed: true, lat: 23.0125, lng: 72.5910 },
+          { name: "Anand Bypass", time: "03:20 PM", passed: true, lat: 22.5645, lng: 72.9289 },
+          { name: "Vadodara Central", time: "04:05 PM", passed: true, lat: 22.3107, lng: 73.1812 },
+          { name: "Bharuch Narmada Bridge", time: "05:10 PM", passed: true, lat: 21.7051, lng: 72.9959 },
+          { name: "Surat Central", time: "06:35 PM", passed: false, lat: 21.2054, lng: 72.8398 },
+          { name: "Navsari ST Depot", time: "07:45 PM", passed: false, lat: 20.9467, lng: 72.9279 }
+        ]
+      },
+      {
+        id: "RT-03",
+        from: "Valsad",
+        to: "Ahmedabad",
+        busNo: "GJ-18-AZ-9146",
+        type: "Volvo 2x2",
+        departure: "06:30 AM",
+        arrival: "01:15 PM",
+        duration: "06:45:00",
+        distanceKm: "336.50",
+        status: "Running",
+        stops: [
+          { name: "Valsad ST Depot", time: "06:30 AM", passed: true, lat: 20.6100, lng: 72.9342 },
+          { name: "Chikhli Cross Road", time: "07:10 AM", passed: true, lat: 20.7570, lng: 73.0645 },
+          { name: "Navsari Bypass", time: "07:45 AM", passed: true, lat: 20.9467, lng: 72.9279 },
+          { name: "Surat Central", time: "08:40 AM", passed: true, lat: 21.2054, lng: 72.8398 },
+          { name: "Ankleshwar GIDC", time: "09:45 AM", passed: false, lat: 21.6264, lng: 73.0033 },
+          { name: "Vadodara Central", time: "11:00 AM", passed: false, lat: 22.3107, lng: 73.1812 },
+          { name: "Nadiad Expressway", time: "11:55 AM", passed: false, lat: 22.6916, lng: 72.8634 },
+          { name: "Ahmedabad Ranip", time: "01:15 PM", passed: false, lat: 23.0768, lng: 72.5830 }
+        ]
+      },
+      {
+        id: "RT-04",
+        from: "Sachivalay",
+        to: "Bavla",
+        busNo: "GJ-18-Z-6066",
+        type: "Express",
+        departure: "06:12 PM",
+        arrival: "07:37 PM",
+        duration: "01:25:00",
+        distanceKm: "56.88",
+        status: "Running",
+        stops: [
+          { name: "Sachivalay - Gandhinagar", time: "06:12 PM", passed: true, lat: 23.2156, lng: 72.6369 },
+          { name: "CH Road Vidhansabha", time: "06:22 PM", passed: true, lat: 23.2100, lng: 72.6450 },
+          { name: "Adalaj Chowkadi", time: "06:49 PM", passed: true, lat: 23.1670, lng: 72.5815 },
+          { name: "Iscon Cross Road", time: "07:10 PM", passed: false, lat: 23.0275, lng: 72.5074 },
+          { name: "Sanand Circle", time: "07:22 PM", passed: false, lat: 22.9920, lng: 72.3810 },
+          { name: "Bavla ST Stand", time: "07:37 PM", passed: false, lat: 22.8322, lng: 72.3615 }
+        ]
+      },
+      {
+        id: "RT-05",
+        from: "Ahmedabad",
+        to: "Rajkot",
+        busNo: "GJ-18-AZ-8080",
+        type: "Volvo 2x2",
+        departure: "04:30 PM",
+        arrival: "08:15 PM",
+        duration: "03:45:00",
+        distanceKm: "215.30",
+        status: "Running",
+        stops: [
+          { name: "Ahmedabad Geeta Mandir", time: "04:30 PM", passed: true, lat: 23.0125, lng: 72.5910 },
+          { name: "Bavla Cross Road", time: "05:15 PM", passed: true, lat: 22.8322, lng: 72.3615 },
+          { name: "Bagodara Junction", time: "05:50 PM", passed: true, lat: 22.6828, lng: 72.2356 },
+          { name: "Limbdi Highway Stop", time: "06:40 PM", passed: false, lat: 22.5654, lng: 71.8080 },
+          { name: "Chotila Temple Stop", time: "07:25 PM", passed: false, lat: 22.4239, lng: 71.1969 },
+          { name: "Rajkot Shastri Maidan", time: "08:15 PM", passed: false, lat: 22.3039, lng: 70.8022 }
+        ]
+      },
+      {
+        id: "RT-06",
+        from: "Surat",
+        to: "Dwarka",
+        busNo: "GJ-18-Z-9912",
+        type: "Luxury",
+        departure: "05:00 PM",
+        arrival: "07:30 AM",
+        duration: "14:30:00",
+        distanceKm: "680.00",
+        status: "Scheduled",
+        stops: [
+          { name: "Surat Central Depot", time: "05:00 PM", passed: false, lat: 21.2054, lng: 72.8398 },
+          { name: "Bharuch Junction", time: "06:15 PM", passed: false, lat: 21.7051, lng: 72.9959 },
+          { name: "Vadodara Central", time: "07:30 PM", passed: false, lat: 22.3107, lng: 73.1812 },
+          { name: "Ahmedabad Ranip", time: "09:45 PM", passed: false, lat: 23.0768, lng: 72.5830 },
+          { name: "Rajkot ST Depot", time: "01:30 AM", passed: false, lat: 22.3039, lng: 70.8022 },
+          { name: "Jamnagar ST Stand", time: "03:45 AM", passed: false, lat: 22.4707, lng: 70.0577 },
+          { name: "Dwarka Bus Station", time: "07:30 AM", passed: false, lat: 22.2442, lng: 68.9685 }
+        ]
+      }
+    ];
+
+    let currentRoute = GSRTC_ROUTES_DB[0];
+    let leafletMapInstance = null;
+    let liveMarker = null;
+    let routePolyline = null;
+    let stopMarkersGroup = null;
+    let animTimer = null;
+
+    // View Navigation
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const target = document.getElementById(screenId);
@@ -847,14 +934,88 @@
     function setRoute(from, to) {
       document.getElementById('from-station').value = from;
       document.getElementById('to-station').value = to;
+      filterAndRenderBuses();
     }
 
-    // Tab Switch between Station List & Map
-    let leafletMapInstance = null;
-    let liveMarker = null;
-    let routePolyline = null;
-    let animFrame = 0;
+    // Dynamic Filter Engine
+    function filterAndRenderBuses() {
+      const fromInput = document.getElementById('from-station').value.trim().toLowerCase();
+      const toInput = document.getElementById('to-station').value.trim().toLowerCase();
+      const coachType = document.getElementById('coach-type').value;
 
+      const filtered = GSRTC_ROUTES_DB.filter(route => {
+        const matchFrom = !fromInput || route.from.toLowerCase().includes(fromInput);
+        const matchTo = !toInput || route.to.toLowerCase().includes(toInput);
+        const matchCoach = (coachType === 'All') || (route.type === coachType);
+        return matchFrom && matchTo && matchCoach;
+      });
+
+      const container = document.querySelector('.bus-list-content');
+      container.innerHTML = '';
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding: 40px 20px; color:#64748b;">
+            <p style="font-size:15px; font-weight:600; color:#1e293b;">No Buses Found</p>
+            <p style="font-size:13px; margin-top:6px;">Try quick selecting popular routes below.</p>
+          </div>
+        `;
+      } else {
+        filtered.forEach(route => {
+          const statusClass = route.status === 'Running' ? 'status-running' : 'status-scheduled';
+          const card = document.createElement('div');
+          card.className = 'bus-item-card';
+          card.innerHTML = `
+            <div class="bus-card-title">${route.from} to ${route.to}</div>
+            <div class="bus-card-meta">Bus No: ${route.busNo}</div>
+            <div class="bus-card-meta">Type: ${route.type}</div>
+            <div class="bus-card-meta">Arrival Time: ${route.arrival}</div>
+            <div class="bus-status-badge ${statusClass}">${route.status}</div>
+          `;
+          card.onclick = () => loadRouteDetails(route.id);
+          container.appendChild(card);
+        });
+      }
+
+      showScreen('screen-list');
+    }
+
+    // Route Details Loader
+    function loadRouteDetails(routeId) {
+      const route = GSRTC_ROUTES_DB.find(r => r.id === routeId) || GSRTC_ROUTES_DB[0];
+      currentRoute = route;
+
+      document.getElementById('det-route-title').innerText = `${route.from} to ${route.to}`;
+      document.getElementById('det-bus-no').innerText = `Bus No: ${route.busNo}`;
+      document.getElementById('det-bus-type').innerText = `Type: ${route.type}`;
+      document.getElementById('det-km').innerText = route.distanceKm;
+      document.getElementById('det-time').innerText = route.duration;
+
+      const stEl = document.getElementById('det-status');
+      stEl.innerText = route.status;
+      stEl.className = 'bus-status-badge ' + (route.status === 'Running' ? 'status-running' : 'status-scheduled');
+
+      // Populate Timeline
+      const container = document.getElementById('timeline-list');
+      container.innerHTML = '';
+      route.stops.forEach((stop) => {
+        container.innerHTML += `
+          <div class="timeline-node">
+            <div class="timeline-line"></div>
+            <div class="radio-circle ${stop.passed ? 'passed' : ''}"></div>
+            <div class="stop-details">
+              <h4>${stop.name}</h4>
+              <p>${stop.passed ? 'Passed at ' : 'Expected at '} ${stop.time}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      switchDetailTab('station');
+      showScreen('screen-details');
+    }
+
+    // Switch between Station Timeline and Live Map
     function switchDetailTab(type) {
       const timelineView = document.getElementById('view-timeline');
       const mapView = document.getElementById('view-map');
@@ -871,79 +1032,27 @@
         mapView.style.display = 'block';
         tabMap.classList.add('active');
         tabStation.classList.remove('active');
-
-        // Init Map after tab becomes visible
-        setTimeout(initOrRefreshMap, 100);
+        setTimeout(initOrRefreshMap, 120);
       }
     }
 
-    // Stops Data for Vijapur to Surat
-    const stopsList = [
-      { name: "Vijapur ST Stand", time: "Arrived at 01:10 PM", passed: true, lat: 23.5623, lng: 72.7533 },
-      { name: "Himmatnagar Cross Road", time: "Arrived at 01:45 PM", passed: true, lat: 23.5979, lng: 72.9698 },
-      { name: "Gandhinagar CH Road", time: "Arrived at 02:40 PM", passed: true, lat: 23.2156, lng: 72.6369 },
-      { name: "Ahmedabad Geeta Mandir", time: "Arrived at 03:30 PM", passed: true, lat: 23.0125, lng: 72.5910 },
-      { name: "Nadiad Express Highway", time: "Arrived at 04:22 PM", passed: true, lat: 22.6916, lng: 72.8634 },
-      { name: "Vadodara Central Bus Station", time: "Arrived at 05:15 PM", passed: true, lat: 22.3107, lng: 73.1812 },
-      { name: "Bharuch Toll Plaza", time: "Expected 06:10 PM", passed: false, lat: 21.7051, lng: 72.9959 },
-      { name: "Surat Central Bus Station", time: "Expected 07:15 PM", passed: false, lat: 21.2054, lng: 72.8398 }
-    ];
+    // Leaflet GPS Highway Map Render with Dynamic Waypoints
+    function initOrRefreshMap() {
+      if (!currentRoute) return;
+      const waypoints = currentRoute.stops.map(s => [s.lat, s.lng]);
 
-    function openRouteDetails(title, busNo, type, km, time, status) {
-      document.getElementById('det-route-title').innerText = title;
-      document.getElementById('det-bus-no').innerText = "Bus No: " + busNo;
-      document.getElementById('det-bus-type').innerText = "Type: " + type;
-      document.getElementById('det-km').innerText = km;
-      document.getElementById('det-time').innerText = time;
-      
-      const stEl = document.getElementById('det-status');
-      stEl.innerText = status;
-      stEl.className = 'bus-status-badge ' + (status === 'Running' ? 'status-running' : 'status-scheduled');
-
-      // Populate Timeline
-      const container = document.getElementById('timeline-list');
-      container.innerHTML = '';
-      stopsList.forEach((stop, i) => {
-        container.innerHTML += `
-          <div class="timeline-node">
-            <div class="timeline-line"></div>
-            <div class="radio-circle ${stop.passed ? 'passed' : ''}"></div>
-            <div class="stop-details">
-              <h4>${stop.name}</h4>
-              <p>${stop.time}</p>
-            </div>
-          </div>
-        `;
+      const busIcon = L.divIcon({
+        className: 'bus-marker-pin',
+        html: `<svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
       });
 
-      switchDetailTab('station');
-      showScreen('screen-details');
-    }
-
-    // Leaflet GPS Highway Map Render
-    function initOrRefreshMap() {
-      const waypoints = stopsList.map(s => [s.lat, s.lng]);
-
       if (!leafletMapInstance) {
-        leafletMapInstance = L.map('leaflet-map', {
-          zoomControl: false
-        }).setView([22.4, 72.9], 8);
+        leafletMapInstance = L.map('leaflet-map', { zoomControl: false }).setView(waypoints[0], 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(leafletMapInstance);
+        stopMarkersGroup = L.layerGroup().addTo(leafletMapInstance);
 
-        // OpenStreetMap tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors',
-          maxZoom: 18
-        }).addTo(leafletMapInstance);
-
-        // Custom Bus Icon
-        const busIcon = L.divIcon({
-          className: 'bus-marker-pin',
-          html: `<svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14]
-        });
-
-        // Add Red Route Highway Polyline
         routePolyline = L.polyline(waypoints, {
           color: '#e53935',
           weight: 4.5,
@@ -952,40 +1061,56 @@
           lineJoin: 'round'
         }).addTo(leafletMapInstance);
 
-        // Origin and Destination Stop Markers
-        stopsList.forEach((st, idx) => {
-          if (idx === 0 || idx === stopsList.length - 1 || idx === 5) {
-            L.circleMarker([st.lat, st.lng], {
-              radius: 6,
-              fillColor: '#ffffff',
-              color: '#dc2626',
-              weight: 3,
-              fillOpacity: 1
-            }).addTo(leafletMapInstance).bindPopup(`<b>${st.name}</b><br>${st.time}`);
-          }
-        });
-
-        // Bus moving live marker
-        liveMarker = L.marker([22.3107, 73.1812], { icon: busIcon }).addTo(leafletMapInstance);
-        leafletMapInstance.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
-
-        // Smooth live bus interpolation along Vadodara-Bharuch corridor
-        setInterval(() => {
-          animFrame += 0.005;
-          if (animFrame > 1) animFrame = 0;
-          // Interpolate between Vadodara (22.3107, 73.1812) and Bharuch (21.7051, 72.9959)
-          const curLat = 22.3107 - (22.3107 - 21.7051) * animFrame;
-          const curLng = 73.1812 - (73.1812 - 72.9959) * animFrame;
-          if (liveMarker) {
-            liveMarker.setLatLng([curLat, curLng]);
-          }
-        }, 150);
-
+        liveMarker = L.marker(waypoints[0], { icon: busIcon }).addTo(leafletMapInstance);
       } else {
+        routePolyline.setLatLngs(waypoints);
         leafletMapInstance.invalidateSize();
-        leafletMapInstance.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
       }
+
+      // Re-draw Stop Pins
+      stopMarkersGroup.clearLayers();
+      currentRoute.stops.forEach((st, idx) => {
+        if (idx === 0 || idx === currentRoute.stops.length - 1 || st.passed) {
+          L.circleMarker([st.lat, st.lng], {
+            radius: 5.5,
+            fillColor: '#ffffff',
+            color: '#dc2626',
+            weight: 3,
+            fillOpacity: 1
+          }).addTo(stopMarkersGroup).bindPopup(`<b>${st.name}</b><br>${st.time}`);
+        }
+      });
+
+      leafletMapInstance.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+
+      // Live GPS Telemetry Simulation
+      if (animTimer) clearInterval(animTimer);
+
+      let animProgress = 0;
+      const passedIdx = currentRoute.stops.map(s => s.passed).lastIndexOf(true);
+      const startIdx = passedIdx >= 0 ? passedIdx : 0;
+      const nextIdx = Math.min(currentRoute.stops.length - 1, startIdx + 1);
+      const startPoint = currentRoute.stops[startIdx];
+      const nextPoint = currentRoute.stops[nextIdx];
+
+      animTimer = setInterval(() => {
+        if (!currentRoute || currentRoute.status !== 'Running') return;
+        animProgress += 0.005;
+        if (animProgress > 1) animProgress = 0;
+
+        const curLat = startPoint.lat + (nextPoint.lat - startPoint.lat) * animProgress;
+        const curLng = startPoint.lng + (nextPoint.lng - startPoint.lng) * animProgress;
+        if (liveMarker) {
+          liveMarker.setLatLng([curLat, curLng]);
+        }
+      }, 150);
     }
+
+    // Default initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      filterAndRenderBuses();
+      showScreen('screen-dashboard');
+    });
   </script>
 </body>
 </html>
